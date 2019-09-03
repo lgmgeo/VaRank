@@ -1,0 +1,331 @@
+# This file is used to simplify the configuration of VaRank.
+# Anything behind a hashtag is considered as a comment
+# Please, feel free to change the VaRank configuration.
+
+
+#----------------
+# Family Barcode:
+#----------------
+#Grouping sample names together help to define the naming of the files with the same prefix (fam1_ for all family members) and to define automatically a specific barcode, the "familyBarcode".
+#As an example, 2 families where the fam1 corresponds to a trio sequencing (proband and parents) and fam2 with 2 affected child.
+
+#fam1: Sample1 Sample2 Sample3 
+#fam2: Sample4 Sample5
+
+
+#----------------
+# VaRank Options:
+#----------------
+
+#-javaPath:		java
+#-vcfInfo:		no
+#-metrics:              us
+#-nowebsearch:          yes
+#-rsfromvcf:            no
+#-Homstatus:            no
+#-Homcutoff:            80
+#-SSFcutoff:            -5
+#-NNScutoff:            -10
+#-MEScutoff:            -15
+#-phastConsCutoff:      0.95
+#-readFilter:           10
+#-readPercentFilter:    15
+#-depthFilter:          10
+#-freqFilter:           0.01
+#-rsFilter:             removeNonPathoRS
+#-S_Known:		110
+#-S_Fs:			100
+#-S_Nonsense:		100
+#-S_EssentialSplice:	90
+#-S_StartLoss:		80
+#-S_StopLoss:		80
+#-S_CloseSplice:	70
+#-S_Missense:		50
+#-S_LSEstrong:		40
+#-S_LSEweak:		35
+#-S_DeepSplice:		25
+#-S_Inframe:		40
+#-S_Synonymous:		10
+#-B_phastCons:		 5
+#-B_SIFT:		 5
+#-B_PPH2: 		 5
+#-alamutHumanDB:	GRCh37
+#-snpeffHumanDB:	""
+#-dbSNP:		""
+#-dbNSFP:		""
+#-phastConsDB:		""
+#-msigdb:		""
+#-SamVa:		no
+#-extann:		""
+#-uniprot:              "" 
+#-refseq:               ""
+#-hgmdUser:             ""
+#-hgmdPasswd:           ""
+#-proxyUser:            ""
+#-proxyPasswd:  	"password"
+#-proxyServer:          ""
+#-proxyPort:        	"8080"
+
+
+
+#-----------------------
+# VaRank Output columns:
+#-----------------------
+# Output column names and sources (one per line) are listed below. 
+# Column names are either extracted from the annotation engine (alamut, snpeff) or calculated by VaRank.
+# VaRank keeps the following column ordering (that can be change by the user).
+# Output column name should not begin with "-" and should not contain a space " ".
+
+# outputColumNames obtained with Alamut annotations:
+#variantID		      
+#gene			     
+#geneDesc		    
+#omimId			   
+#transcript		  
+#strand			 
+#transLen		
+#cdsLen		
+#chr	
+#start			   
+#end			  
+#ref			 
+#alt			
+#protein		
+#Uniprot	
+#posAA			     
+#wtAA_1			    
+#wtCodon			   
+#varAA_1			  
+#zygosity		 
+#totalReadDepth		
+#varReadDepth		   
+#varReadPercent
+#QUALphred		 
+#varType			
+#codingEffect	
+#varLocation		
+#assembly	
+#exon		
+#intron		
+#gDNAstart		    
+#gDNAend			   
+#gNomen			  
+#cDNAstart		 
+#cDNAend			
+#cNomen		
+#pNomen	
+#hgmdId			      
+#hgmdPhenotype		     
+#hgmdPubMedId		    
+#hgmdSubCategory		   
+#clinVarIds		  
+#clinVarOrigins		 
+#clinVarMethods		
+#clinVarClinSignifs	    
+#clinVarReviewStatus	   
+#clinVarPhenotypes	  
+#rsId			     
+#rsValidations		    
+#rsValidationNumber	   
+#rsAncestralAllele	  
+#rsHeterozygosity	 
+#rsClinicalSignificance	     
+#rsMAF			     
+#rsMAFAllele		    
+#rsMAFCount		   
+#1000g_AF		  
+#1000g_AFR_AF		 
+#1000g_SAS_AF		
+#1000g_EAS_AF		     
+#1000g_EUR_AF		    
+#1000g_AMR_AF		   
+#gnomadAltFreq_all	  
+#gnomadAltFreq_afr	 
+#gnomadAltFreq_amr	     
+#gnomadAltFreq_asj	    
+#gnomadAltFreq_eas	   
+#gnomadAltFreq_sas	  
+#gnomadAltFreq_nfe	 
+#gnomadAltFreq_fin	
+#gnomadAltFreq_oth	     
+#gnomadAltFreq_popmax	    
+#gnomadHomCount_all	   
+#gnomadHomCount_afr	  
+#gnomadHomCount_amr	 
+#gnomadHomCount_asj	      
+#gnomadHomCount_eas	      
+#gnomadHomCount_sas	      
+#gnomadHomCount_nfe	      
+#gnomadHomCount_fin	      
+#gnomadHomCount_oth	      
+#gnomadHetCount_all	      
+#gnomadHetCount_afr	      
+#gnomadHetCount_amr	      
+#gnomadHetCount_asj	      
+#gnomadHetCount_eas	      
+#gnomadHetCount_sas	      
+#gnomadHetCount_nfe	      
+#gnomadHetCount_fin	      
+#gnomadHetCount_oth	      
+#gnomadHemCount_all	      
+#gnomadHemCount_afr	      
+#gnomadHemCount_amr	      
+#gnomadHemCount_asj	      
+#gnomadHemCount_eas	      
+#gnomadHemCount_sas	      
+#gnomadHemCount_nfe	      
+#gnomadHemCount_fin	      
+#gnomadHemCount_oth	      
+#gnomadFilter		      
+#gnomadReadDepth		      
+#gnomadOrigin		      
+#deltaMaxEntScorePercent	      
+#wtMaxEntScore		      
+#varMaxEntScore		      
+#deltaSSFscorePercent	        
+#wtSSFScore		      
+#varSSFScore		      
+#deltaNNSscorePercent	         
+#wtNNSScore		      
+#varNNSScore		      
+#nearestSSChange		      
+#distNearestSS		      
+#nearestSSType		      
+#localSpliceEffect	      
+#localSpliceAnnotation	      
+#localSS_pos		      
+#localSS_wtMaxEntScore	      
+#localSS_varMaxEntScore	      
+#localSS_wtNNSScore	      
+#localSS_varNNSScore	      
+#localSS_wtSSFScore	      
+#localSS_varSSFScore	      
+#branchPointPos		      
+#branchPointChange	      
+#proteinDomain1		      
+#proteinDomain2		      
+#proteinDomain3		      
+#proteinDomain4		      
+#SIFTprediction		      
+#SIFTweight		      
+#SIFTmedian		      
+#PPH2pred		      
+#phyloP			      
+#phastCons		      
+#granthamDist		      
+#AGVGDclass		      
+#AGVGDgv			      
+#AGVGDgd			      
+#varankVarScore		      
+#annotationAnalysis	      
+#avgTotalDepth		      
+#sdTotalDepth		      
+#countTotalDepth	  	      
+#avgVariantDepth		      
+#sdVariantDepth		      
+#countVariantDepth	      
+#familyBarcode		      
+#barcode			      
+#homCount		      
+#hetCount		      
+#alleleCount		      
+#sampleCount		      
+#alleleFrequency	      	      
+#samVa			      
+
+
+
+# outputColumNames obtained with SnpEff annotations:
+#variantID
+#gene
+#rsID
+#chr
+#start
+#end
+#ref
+#alt
+#zygosity
+#totalReadDepth
+#varReadDepth
+#varReadPercent
+#QUALphred
+#Uniprot
+#codingEffect
+#varLocation
+#exon
+#intron
+#varType
+#Annotation_Impact
+#Gene_ID
+#Feature_Type
+#Feature_ID
+#Transcript_BioType
+#cNomen
+#pNomen
+#wtAA_1
+#posAA
+#varAA_1
+#cDNA.pos
+#cDNA.length
+#CDS.pos
+#CDS.length
+#AA.pos
+#AA.length
+#Distance
+#dbNSFP_1000Gp1_AF
+#dbNSFP_1000Gp1_AFR_AF
+#dbNSFP_1000Gp1_AMR_AF
+#dbNSFP_1000Gp1_ASN_AF
+#dbNSFP_1000Gp1_EUR_AF
+#dbNSFP_CADD_phred
+#dbNSFP_ESP6500_AA_AF
+#dbNSFP_ESP6500_EA_AF
+#dbNSFP_ExAC_AC
+#dbNSFP_ExAC_AF
+#dbNSFP_ExAC_AFR_AC
+#dbNSFP_ExAC_AFR_AF
+#dbNSFP_ExAC_AMR_AC
+#dbNSFP_ExAC_AMR_AF
+#dbNSFP_ExAC_Adj_AC
+#dbNSFP_ExAC_Adj_AF
+#dbNSFP_ExAC_EAS_AC
+#dbNSFP_ExAC_EAS_AF
+#dbNSFP_ExAC_FIN_AC
+#dbNSFP_ExAC_FIN_AF
+#dbNSFP_ExAC_NFE_AC
+#dbNSFP_ExAC_NFE_AF
+#dbNSFP_ExAC_SAS_AC
+#dbNSFP_ExAC_SAS_AF
+#dbNSFP_FATHMM_pred
+#dbNSFP_GERP___NR
+#dbNSFP_GERP___RS
+#dbNSFP_LRT_pred
+#dbNSFP_MetaSVM_pred
+#dbNSFP_MutationAssessor_pred
+#dbNSFP_MutationTaster_pred
+#dbNSFP_PROVEAN_pred
+#dbNSFP_Polyphen2_HDIV_pred
+#dbNSFP_Polyphen2_HVAR_pred
+#dbNSFP_SIFT_pred
+#phastCons
+#SIFTprediction
+#PPH2class
+#LOF
+#NMD
+#varankVarScore
+#annotationAnalysis
+#avgTotalDepth
+#sdTotalDepth
+#countTotalDepth
+#avgVariantDepth
+#sdVariantDepth
+#countVariantDepth
+#familyBarcode
+#barcode
+#homCount
+#hetCount
+#alleleCount
+#sampleCount
+#alleleFrequency
+#samVa
+#

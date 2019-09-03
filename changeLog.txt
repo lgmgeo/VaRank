@@ -1,0 +1,153 @@
+############################################################################################################
+# VaRank 1.4.3                                                                                             #
+#                                                                                                          #
+# VaRank: a simple and powerful tool for ranking genetic variants                                          #
+#                                                                                                          #
+# Copyright (C) 2016 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                     #
+#                    Jean Muller (jeanmuller@unistra.fr)                                                   #
+#                                                                                                          #
+# Please cite the following article:                                                                       #
+# Geoffroy V.*, Pizot C.*, Redin C., Piton A., Vasli N., Stoetzel C., Blavier A., Laporte J. and Muller J. #
+# VaRank: a simple and powerful tool for ranking genetic variants.                                         #
+# PeerJ. 2015. (10.7717/peerj.796)                                                                         #
+############################################################################################################
+
+, 2018:VaRank version 1.4. is posted.
+- Add bugfix if a line with only a tabulation is present in the configfile
+- Improve the path displayed for the uniprot and refseq options
+- New annotations have been added (prediction of interacting genes via FunCoup)
+- Removing of HGMD columns annotations (due to the termination of HGMD annotation with the Alamut Batch version 1.10)
+
+
+Aug 30, 2018:VaRank version 1.4.3 is posted.
+- VaRank installation directory contains an ExtAnn directory that is now used by default to list all the additional files provided there
+- Several new annotations have been added (gene intolerance to a loss of function variation, haploinsufficiency...)
+- Only the first annotated gene of each variant will be annotated with external annotations
+- For a variant annotated on several transcripts of a same gene, keep (i) the transcript annotation with the best score or (ii) with an equal score the longest transcript annotation
+
+Jun 5, 2018:VaRank version 1.4.2 is posted.
+- Add bugfix concerning Alamut annotation
+
+Jun 1, 2018: VaRank version 1.4.1 is posted.
+- Add bugfix concerning NNS annotation with Alamut (previous Alamut annotations need to be removed before to run a VaRank analysis again)
+
+Apr 17, 2018: VaRank version 1.4 is posted.
+
+Fixed Issues/changes:
+- In order to add more flexibility to the output files, the user can now select the annotation columns and their order using the configfile
+- Warning: several output column names have changed. Please check in the README file
+- Several new annotations have been added (gnomAD, Align GVGD, gene inheritance mode...)
+- Due to a high false positive calls observed for indels in the EVS dataset, the EVS annotations have been removed from the output and automatic filtering
+- Support Alamut-batch version 1.6 to 1.9 (January 2018)
+- Support SnpEff version 4.2 to 4.3 (build 2017-11-24) (Requires Java 1.8)
+- Add bugfix: in some cases, a variation could be annotated using the non optimal isoform or gene (i.e. a variation localized either downstream of gene1 or in an intron of gene2 is now annotated preferentially to the intron of gene2)
+- Variation with a depth of coverage equal to 0 are now annotated and reported in the output files
+- Add bugfix: a variation associated with 2 genes and annotated with a pathogenic effect from ClinVar can not lead to the report of the non optimal gene anymore
+
+
+Aug 08, 2016: VaRank version 1.3.5 is posted.
+
+Fixed Issues/changes:
+- Support version 1.5.2 (July 2016) of Alamut-batch including novel local splice effect scores and branch point analysis
+- Variants causing a premature stop codon in the coding sequence are now reported as ‘stop gain’ in the codingEffect output field instead of ‘nonsense’ which is now deprecated
+- Change in ExAC annotations: homozygous frequencies are now replaced by the homozygous count
+- Add of the --outputDataVersions when running Alamut-batch (reporting of databases names and corresponding versions)
+- Add of the "-vcfFields" option. Allows to selectively report fields from the INFO column to the output files.
+- Add of the "-SamOut" option. Write output files only for selected samples (not for all samples of all VCF input files)
+- Enhance Alamut Batch error messages
+- Add bugfix concerning external annotations (when containing "{}" characters)
+- Add bugfix concerning detection of the number of read for the variant from the vcf file (with NR, AD, AC, AO and DV fields)
+
+
+Mar 01, 2016: VaRank version 1.3.4 is posted.
+- Add bugfix concerning scoring variations in ClinVar with "conflicting status"
+
+
+Jan 18, 2016: VaRank version 1.3.3 is posted.
+- Add bugfix concerning the vcfdir names containing "vcf"
+
+
+Dec 18, 2015: VaRank version 1.3.2 is posted.
+- Add bugfix for the specific treatment of allele count to compensate bad behavior from Torrent Suite VCF files
+
+
+Dec 15, 2015: VaRank version 1.3.1 is posted.
+- Add of the "AlamutProcesses" option (available only with the "standalone" Alamut version)
+- Add of the "AlamutAlltrans" option (available only with the Alamut Batch annotation)
+- Add bugfix concerning scoring of the "stop loss" and "start loss" variants.
+
+
+Nov 12, 2015: VaRank version 1.3 is posted. 
+- Compatibility with the version 4.2 of the VCF format. Reporting in the VaRank outputs of the ‘*’ alleles (upstream deletion) 
+- Scoring scheme improvement: new category for splice site creation and score adjustment for some categories (available only with Alamut Batch annotation) 
+- Creation of a new output file (VaRankIDlinkedToVCF.txt), giving for each VaRankID a correspondence between the genome position and the VCF positions (can be different for indels)
+- Add of the "SpSiAnnotation" column
+- Add of the "-SamVa" option. A new column (SamVa) available to display samples and zigosity status different from the reference sequence within the barcode (up to 10 different samples) 
+- Add bugfix concerning scoring of the dbSNP pathogenic variants 
+- Add bugfix for some rare situation in the VCF in which the multiple alternate variants would be skipped and not counted in the barcode 
+- New method to filter out benign annotated variants in dbSNP 
+- Compatible with Alamut Batch 1.4.2 (Jul. 2015)
+- Compatible with SnpEff V4.1 L (2015-10-03)
+- Update of the statistics treatment
+- Add bugfix for SnpEff annotations
+
+
+Jul 24, 2015: VaRank version 1.2.5 is posted.
+- Add bugfix concerning interpretation of some specific VCF positions
+
+
+Jun 05, 2015: VaRank version 1.2.4 is posted.
+- Rename "DB" option in "pph2DB". "pph2DB" option can now be correctly set by user. 
+- Change mode of PPH2 lock files (avoid bug in case of different users)"
+- Add bugfix concerning shift in the number of columns when a local installation of PPH2 is used
+- Add bugfix concerning metrics on allele frequency
+- Add bugfix concerning treatment of the external annotations (with some specific extann files)
+
+
+Fev 26, 2015: VaRank version 1.2.3 is posted.
+- Support version 1.4.0 (Fev. 2015) of Alamut-batch (adds annotations from ClinVar and ExAC)
+- Addition of ExAC annotations and filtering with the Alamut-batch annotation engine
+- Addition of ClinVarannotations with the Alamut-batch annotation engine
+- Support version 4.1b of SnpEff
+- Modification in the use of the dbSNP MAF for filtering
+- Addition of the "Allele frequency" annotation (allele frequency in all samples analyzed together)
+- Add bugfix concerning interpretation of some specific VCF positions
+
+
+Fev 02, 2015: VaRank version 1.2.2 is posted.
+- Speed improvment of SnpEff annotation (by creating a unique input VCF file sorted by position)
+- Add bugfix concerning SnpEff annotation
+- New treatment of the external annotations (in case of one variant that could be attributed to several genes, all genes are annotated)
+
+
+Jan 27, 2015: VaRank version 1.2.1 is posted.
+- Add bugfix concerning SnpEff annotation
+
+
+Jan 20, 2015: VaRank version 1.2 is posted.
+- New annotation engine: support of SnpEff in addition to Alamut-batch.
+- Addition of 1000g annotations and filtering
+- Scoring scheme fully configurable by the user
+- Tutorial V1.0 
+
+
+Nov 28, 2014: VaRank version 1.1.1 is posted.
+- Extended support of gzip files to the external annotation input file.
+- Default adjustment score set to 5 (before was 10) for the PolyPhen-2 and SIFT prediction. The score can now also be modified by the user (with B_phastCons, B_SIFT and B_PPH2 options)
+- Addition of error messages to improve support (incorrect input file, Alamut not accepted Alamut-batch License, not supported version of Alamut-batch, ...)
+- Add a bugfix concerning pph2 analyses
+
+
+Nov 25, 2014: New VaRank web site configuration.
+
+
+Nov 7, 2014: VaRank version 1.1 is posted.
+- Support version 1.3.0 (Oct. 2014) of Alamut-batch (using new clinical significance terms from ClinVar)
+- Support gzip VCF files in input
+- Offer 3 new annotations columns in the output files:
+	- Avg_TotalDepth: Total read depth average at the variant position for all samples analyzed that have the variation
+	- SD_TotalDepth: Standard deviation associated with Avg_TotalDepth
+	- Count_TotalDepth: Number of samples considered for the average total read depth
+- Add a minor bugfix concerning pph2 analyses
+- Updated VariantID nomenclature for large indels
+

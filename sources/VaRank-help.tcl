@@ -1,0 +1,39 @@
+############################################################################################################
+# VaRank 1.4.3                                                                                             #
+#                                                                                                          #
+# VaRank: a simple and powerful tool for ranking genetic variants                                          #
+#                                                                                                          #
+# Copyright (C) 2016-2018 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
+#                         Jean Muller (jeanmuller@unistra.fr)                                              #
+#                                                                                                          #
+# Please cite the following article:                                                                       #
+# Geoffroy V.*, Pizot C.*, Redin C., Piton A., Vasli N., Stoetzel C., Blavier A., Laporte J. and Muller J. #
+# VaRank: a simple and powerful tool for ranking genetic variants.                                         #
+# PeerJ. 2015 (10.7717/peerj.796)                                                                          #
+#                                                                                                          #
+# This is part of VaRank source code.                                                                      #
+#                                                                                                          #
+# This program is free software; you can redistribute it and/or                                            #
+# modify it under the terms of the GNU General Public License                                              #
+# as published by the Free Software Foundation; either version 3                                           #
+# of the License, or (at your option) any later version.                                                   #
+#                                                                                                          #
+# This program is distributed in the hope that it will be useful,                                          #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of                                           #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                            #
+# GNU General Public License for more details.                                                             #
+#                                                                                                          #
+# You should have received a copy of the GNU General Public License                                        #
+# along with this program; If not, see <http://www.gnu.org/licenses/>.                                     #
+############################################################################################################
+
+proc showHelp {} {
+
+    global g_VaRank
+    
+    puts [ContentFromFile $g_VaRank(sourcesDir)/commandLineOptions.txt]
+    
+    return
+}
+
+

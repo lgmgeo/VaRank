@@ -1,0 +1,159 @@
+
+COMMAND LINE USAGE
+       $VARANK/bin/VaRank -vcfdir 'Path of your study directory containing your vcf input file' >& VaRank.log &
+
+OPTIONS
+
+-help			More information on the arguments.
+
+-vcfDir			Path of your study directory containing your vcf input file.
+	
+-vcfInfo		To extract the info column from the .vcf file and insert the data in the output file (last columns).
+			Range values: yes or no (default)
+
+-vcfFields		“List of fields”. To extract selected fields from the VCF “INFO” column and insert these data in the output files (last columns). Only if -vcfInfo is set to “yes”.
+
+-rsfromvcf		To extract the rsID and validation status from the .vcf file and insert this in the output files.
+			Range values: yes or no (default)
+
+-Homstatus		To force the determination of the homozygous or heterozygous state of one variation. If set to yes it will use the Homcutoff value to decide.
+			Range values: yes or no (default)
+
+-Homcutoff		To determine the homozygous or heterozygous state of one variation. If set to some value it will force to reconsider the data provided.
+			Range values: [0,100] default: 80 (active only if Homstatus=yes or when no status is given)
+
+-MEScutoff		MaxEntScan cutoff, to determine the impact of the variant on splicing. Expressed as the % difference between the variant and the WT score.
+			Range values: [-100,0], default: -15
+	
+-SSFcutoff		Splice Site Finder cutoff, to determine the impact of the variant on splicing. Expressed as the % difference between the variant and the WT score.
+			Range values: [-100,0], default: -5
+
+-NNScutoff		NNSplice cutoff, to determine the impact of the variant on splicing. Expressed as the % difference between the variant and the WT score.
+			Range values: [-100,0], default: -10
+
+-phastConsCutoff	To determine when a genomic position is conserved or not. Above the cutoff is considered as 	conserved.
+			Range values: [0,1], default: 0.95
+
+-readFilter		Minimum number of reads for the variants.
+			Range values: [0,-], default: 10
+
+-depthFilter		Minimum depth for the variants.
+			Range values: [0,-], default: 10
+	
+-readPercentFilter	Minimum percent of variant reads for considering a variant.
+			Range values: [0,100], default: 15
+
+-freqFilter		Filtering variants based on their MAF in the SNV databases (dbsnp, 1000Genome, EVS, gnomAD, …).
+			Range values: [0.0,1.0], default: 0.01
+ 
+-rsFilter		Filtering variants on the SNP information.
+			Values: removeNonPathoRS (remove variants without "probable-pathogenic" or "pathogenic" annotation, see clinical significance field in dbSNP website. 
+			Filtering only for variants with at least 2 validations).
+			none = keep all variants, no filtering on rsID.
+			Default: removeNonPathoRS
+
+-extann			Tab separated file containing annotation to add to the final output files. Restrictions for the format are: first line is a header, first column is the gene name. 
+			Typical use would be a gene file containing specific annotations such as transmission mode, disease, expression...
+
+-metrics		Changing numerical values from frequencies to us or fr metrics (e.g. 0.2 or 0,2).
+			Range values: us (default) or fr
+
+-alamutHumanDB		Alamut Batch specific option to select the reference human genome version.
+
+-javaPath		To explicitly set the Java path.
+
+-snpeffHumanDB		SnpEff specific option to select the reference human genome version.
+			Ex: “GRCh37.75”
+
+-dbSNP			SnpEff specific option to describe the full path to the location of the dbSNPvcf file used by SnpSift.
+			Ex: “$SNPEFF/db/dbSNP.2015-01-09_00-All.vcf"
+
+-dbNSFP			SnpEff specific option to describe the full path to the location of the dbNSFPvcf file used by SnpSift.
+			Ex: "$SNPEFF/db/dbNSFP/dbNSFP2.4.txt.gz"
+
+-phastConsDB		SnpEff specific option to describe the full path to the location phastConsdirectory used by SnpSift.
+			Ex: “$SNPEFF/db/phastCons"
+
+-uniprot		Name of the UniProt sequence file (optional, only use if PPH2 is installed).
+			Ex: HUMAN.fasta.gz (default)
+
+-refseq			Name of the RefSeq sequence file (optional, only use if PPH2 is installed).
+			Ex: human.protein.faa.gz (default)
+
+-proxyUser		Proxy User login.
+-proxyPasswd		Proxy User password (optional, default is “password”).
+-proxyServer		The name of the proxy.
+-proxyPort		The port used by the proxy to communicate (default is “8080”).
+
+-SamVa			To add a new column with the sample ID of the 10 first non homozygous WT variants, with their homozygote/heterozygote status. 
+			Range values: yes or no (default)
+
+-SamOut			A “Sample list”. To write output files only for selected samples.
+			Ex: “sample1 sample2”. 
+
+- AlamutProcesses	#processes (Alamut batch Standalone version only). Alamut Annotation jobs are split among multiple processes on the same computer.
+			Range values: Integer (default=0, no multi-process)
+
+- AlamutAlltrans 	Annotate variants on all transcripts with Alamut (rather than on the longest transcript).
+			Range values: yes (default) or no
+
+
+The following options are provided to adapt the scoring scheme to the users:
+
+-S_Known		Known mutation as annotated by dbSNP (rsClinicalSignificance or clinVarClinSignifs="pathogenic/probable-pathogenic").
+			Default: 110
+	
+-S_StopGain		A single-base substitution in DNA resulting in a STOP codon (TGA, TAA or TAG).
+			default: 100
+
+-S_Fs			Exonic insertion/deletion of a non-multiple of 3bp resulting often in a premature stop in the reading frame of the gene.
+			default: 100
+
+-S_EssentialSplice	Mutation in one of the canonical splice sites resulting in a significant effect on splicing 
+			(at least 2 out of the 3 programs indicate a relative variation in their score compared to the wild type sequence).
+			default: 90
+
+-S_StartLoss		Mutation leading to the loss of the initiation codon (Met).
+			default: 80
+
+-S_StopLoss		Mutation leading to the loss of the STOP codon.
+			default: 80
+
+-S_CloseSplice		Mutation outside of the canonical splice sites (donor site is -3 to +6', acceptor site -12 to +2) resulting in a significant effect on splicing 
+			(at least 2 out of the 3 programs indicate a relative variation in their score compared to the wild type sequence).
+			default: 70
+
+-S_Missense		A single-base substitution in DNA not resulting in a change in the amino acid.
+			default: 50
+
+-S_LSEstrong		Strong local splice effect (splice site creation or strong activation).
+			default: 40
+
+-S_LSEweak		Weak local splice activation.
+			default: 35
+
+-S_Inframe		Exonic insertion/deletion of a multiple of 3bp.
+			default: 30
+
+-S_DeepSplice		Intronic mutation resulting in a significant effect on splicing (at least 2 out of the 3 programs indicate a relative variation in their score compared to the wild type sequence).
+			default: 25
+
+-S_Synonymous		A single-base substitution in DNA not resulting in a change in the amino acid.
+			default: 10
+
+-B_phastCons		Each variant score is adjusted if a conservation at the genomic level is observed (PhastCons cutoff >0.95).
+			default: 5
+
+-S_ExonIntron		Exonic or intronic variations without any predicted effect
+			default: 2
+
+-S_UTR			3'/5' UTR variant without any predicted effect
+			default: 1
+
+-B_SIFT			Missenses scores are adjusted for each SIFT deleterious prediction.
+			default: 5
+
+-B_PPH2			Missenses scores are adjusted for each PPH2 deleterious prediction status.
+			default: 5
+ 
+
