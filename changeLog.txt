@@ -1,10 +1,10 @@
 ############################################################################################################
-# VaRank 1.4.3                                                                                             #
+# VaRank 1.4.4                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
-# Copyright (C) 2016 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                     #
-#                    Jean Muller (jeanmuller@unistra.fr)                                                   #
+# Copyright (C) 2016-2021 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
+#                         Jean Muller (jeanmuller@unistra.fr)                                              #
 #                                                                                                          #
 # Please cite the following article:                                                                       #
 # Geoffroy V.*, Pizot C.*, Redin C., Piton A., Vasli N., Stoetzel C., Blavier A., Laporte J. and Muller J. #
@@ -12,20 +12,19 @@
 # PeerJ. 2015. (10.7717/peerj.796)                                                                         #
 ############################################################################################################
 
-, 2018:VaRank version 1.4. is posted.
+Jan 05, 2021: VaRank version 1.4.4 is posted.
+- Add gene-based annotations (in the ExtAnn directory)
 - Add bugfix if a line with only a tabulation is present in the configfile
 - Improve the path displayed for the uniprot and refseq options
-- New annotations have been added (prediction of interacting genes via FunCoup)
 - Removing of HGMD columns annotations (due to the termination of HGMD annotation with the Alamut Batch version 1.10)
 
-
-Aug 30, 2018:VaRank version 1.4.3 is posted.
+Aug 30, 2018: VaRank version 1.4.3 is posted.
 - VaRank installation directory contains an ExtAnn directory that is now used by default to list all the additional files provided there
 - Several new annotations have been added (gene intolerance to a loss of function variation, haploinsufficiency...)
 - Only the first annotated gene of each variant will be annotated with external annotations
 - For a variant annotated on several transcripts of a same gene, keep (i) the transcript annotation with the best score or (ii) with an equal score the longest transcript annotation
 
-Jun 5, 2018:VaRank version 1.4.2 is posted.
+Jun 5, 2018: VaRank version 1.4.2 is posted.
 - Add bugfix concerning Alamut annotation
 
 Jun 1, 2018: VaRank version 1.4.1 is posted.

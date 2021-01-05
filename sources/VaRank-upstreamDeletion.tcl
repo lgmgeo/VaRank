@@ -1,9 +1,9 @@
 ############################################################################################################
-# VaRank 1.4.3                                                                                             #
+# VaRank 1.4.4                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
-# Copyright (C) 2016-2018 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
+# Copyright (C) 2016-2021 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
 #                         Jean Muller (jeanmuller@unistra.fr)                                              #
 #                                                                                                          #
 # Please cite the following article:                                                                       #

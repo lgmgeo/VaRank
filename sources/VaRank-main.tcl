@@ -1,11 +1,11 @@
 #!/usr/bin/env tclsh
 
 ############################################################################################################
-# VaRank 1.4.3                                                                                             #
+# VaRank 1.4.4                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
-# Copyright (C) 2016-2018 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
+# Copyright (C) 2016-2021 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
 #                         Jean Muller (jeanmuller@unistra.fr)                                              #
 #                                                                                                          #
 # Please cite the following article:                                                                       #
@@ -79,7 +79,7 @@ source $g_VaRank(sourcesDir)/VaRank-upstreamDeletion.tcl
 puts "VaRank [VaRank_Version]"
 puts "VaRank is a program for Ranking genetic Variation from NGS data"
 puts ""
-puts "Copyright (C) 2016-2018 GEOFFROY Veronique and MULLER Jean"
+puts "Copyright (C) 2016-2021 GEOFFROY Veronique and MULLER Jean"
 puts ""
 puts "Please feel free to contact us for any suggestions or bug reports"
 puts "email: veronique.geoffroy@inserm.fr; jeanmuller@unistra.fr"
