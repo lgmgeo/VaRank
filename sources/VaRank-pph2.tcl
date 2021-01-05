@@ -749,6 +749,7 @@ proc runPPH2-1by1 {} {
 	}
 	set PPH2command "$g_VaRank(pph2Dir)/bin/run_weka.pl -l $g_VaRank(pph2Dir)/models/HumVar.UniRef100.NBd.f11.model $pph2FeaturesAll >& $pph2HumVarOutput"
 	if {[catch {eval exec $PPH2command} Message]} {
+	    puts "$PPH2command"
 	    puts "ERROR : $Message"
 	}
     }

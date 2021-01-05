@@ -826,12 +826,13 @@ proc writeAllVariantsRankingByVar {} {
 			append RankingText($patient) "\t$rajoutVCFinfos"
 		    } 
 		}
-		
+
 		## Adding external user annotations at the end of the output files
 		###################################################################
 		if {[info exists g_VaRank(extann)] && $g_VaRank(extann) ne ""} {
 		    if {$gene eq "NA"} {		    
 			# Adding external user annotations at the end of each output files line
+		        append RankingText($patient) "\t"
 			foreach F [ExternalAnnotations L_Files] {
 			    #puts $F 
 			    set NbHeader [llength [split [ExternalAnnotations $F Header] "\t"]]
