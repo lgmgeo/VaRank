@@ -1,6 +1,6 @@
 What        	Total	Homozygous	Heterozygous	Null
 3'UTR       	0	0	0	0
-5'UTR       	0	0	0	0
+5'UTR       	1	0	1	0
 downstream  	0	0	0	0
 frameshift  	0	0	0	0
 in-frame    	0	0	0	0
@@ -14,4 +14,4 @@ synonymous  	0	0	0	0
 upstream    	0	0	0	0
 unknown     	0	0	0	0
 
-Total:  2 variations.
+Total:  3 variations.

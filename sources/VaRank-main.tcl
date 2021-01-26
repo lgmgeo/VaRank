@@ -65,6 +65,7 @@ if {[info exists env(PPH)] && $env(PPH)!=""} {
 puts "Tcl/Tk version: [info tclversion]"
 source $g_VaRank(sourcesDir)/VaRank-alamut.tcl
 source $g_VaRank(sourcesDir)/VaRank-config.tcl
+source $g_VaRank(sourcesDir)/VaRank-exomiser.tcl
 source $g_VaRank(sourcesDir)/VaRank-filters.tcl
 source $g_VaRank(sourcesDir)/VaRank-general.tcl
 source $g_VaRank(sourcesDir)/VaRank-help.tcl
@@ -226,6 +227,13 @@ if {[createPPH2Input]!=0} {
     } 
     changeModeOfPPH2lockFiles
 } 
+
+## Preparation of the phenotype-driven analysis (Exomiser)
+set L_allGenes [searchForAllGenesContainingVariants]
+if {$g_VaRank(hpo) ne "" && $L_allGenes ne ""} {
+    checkExomiserInstallation
+    runExomiser "$L_allGenes" "$g_VaRank(hpo)"
+}
 
 ## Scoring genetic variants:
 if {[catch {scoreAllTheID} Message]} {

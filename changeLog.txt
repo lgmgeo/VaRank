@@ -12,6 +12,10 @@
 # PeerJ. 2015. (10.7717/peerj.796)                                                                         #
 ############################################################################################################
 
+
+- Include phenotype-driven annotations (HPO), based on Exomiser (Smedley et al., 2015)
+  The "hpo" option can be used jointly with the "SamOut" option. This allows annotations to be added to samples sharing the same phenotype. 
+
 Jan 05, 2021: VaRank version 1.4.4 is posted.
 - Add gene-based annotations (in the ExtAnn directory)
 - Add bugfix if a line with only a tabulation is present in the configfile

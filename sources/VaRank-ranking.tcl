@@ -5,8 +5,6 @@
 #                                                                                                          #
 # Copyright (C) 2016-2021 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                #
 #                         Jean Muller (jeanmuller@unistra.fr)                                              #
-# Copyright (C) 2016 Veronique Geoffroy (veronique.geoffroy@inserm.fr)                                     #
-#                    Jean Muller (jeanmuller@unistra.fr)                                                   #
 #                                                                                                          #
 # Please cite the following article:                                                                       #
 # Geoffroy V.*, Pizot C.*, Redin C., Piton A., Vasli N., Stoetzel C., Blavier A., Laporte J. and Muller J. #
@@ -70,6 +68,7 @@ proc ExternalAnnotations args {
 
     foreach File_Anno [set g_VaRank(extann)] {
 	if {[info exists g_ExtAnnotation($File_Anno,Loaded)]} {continue}
+	if {[regexp "README$|results.txt$" $File_Anno]} {continue}
 
 	puts "...Loading [file tail $File_Anno] ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 	set g_ExtAnnotation($File_Anno,Loaded) 1
@@ -336,7 +335,8 @@ proc writeAllVariantsRankingByVar {} {
 	# SEARCH for indices in g_ANNOTATION(#id),
 	# puts WARNINGS if annotation column is missing
 	set iCol  "i_$colName"
-	set $iCol [lsearch -regexp [split $g_ANNOTATION(#id) "\t"] "^$colName"]; if {[set $iCol] eq -1} {
+	set $iCol [lsearch -regexp [split $g_ANNOTATION(#id) "\t"] "^$colName"]
+	if {[set $iCol] eq -1} {
 	    puts "\twarning: column name \"$colName\" not found in annotations. Removed."
 	    lappend L_colNamesToRemove $colName
 	    continue
@@ -383,6 +383,9 @@ proc writeAllVariantsRankingByVar {} {
 		    append RankingText($patient) "\t[ExternalAnnotations $F Header]"
 		}
 	    }
+	    # Exomiser header columns
+	    append RankingText($patient) "\tEXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE"
+	    
 	    # End of header line
 	    append RankingText($patient) "\n"
 	}
@@ -646,6 +649,15 @@ proc writeAllVariantsRankingByVar {} {
 			}
 		    }
 		}
+
+		# Adding exomiser annotation
+		############################
+		## Adding exomiser annotations only on the first gene
+		set g [lindex [split $gene "/"] 0] 
+		append RankingText($patient) "\t[ExomiserAnnotation "$g" "all"]"
+		
+		# End of annotation line
+		########################
 		append RankingText($patient) "\n"
 	    }
 	}	
@@ -855,6 +867,13 @@ proc writeAllVariantsRankingByVar {} {
 			    }
 			}
 		    }
+
+		    # Adding exomiser annotation
+		    ############################
+		    append RankingText($patient) "\t-1.0\t\t\t"
+		
+		    # End of annotation line
+		    ########################
 		    append RankingText($patient) "\n"			
 		}
 	    }

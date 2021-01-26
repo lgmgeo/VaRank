@@ -2,7 +2,7 @@ Global statistics (non redundant) on 1 samples:
 
 What        	Total	Mean	SD
 3'UTR       	0	NA	NA
-5'UTR       	0	NA	NA
+5'UTR       	1	1	0
 downstream  	0	NA	NA
 frameshift  	0	NA	NA
 in-frame    	0	NA	NA
@@ -16,4 +16,4 @@ synonymous  	0	NA	NA
 upstream    	0	NA	NA
 unknown     	0	NA	NA
 
-Total       	2	NA
+Total       	3	NA

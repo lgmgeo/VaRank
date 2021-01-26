@@ -193,7 +193,7 @@ proc SimplifyVariation {pos ref alt} {
 ## 	2 global variables:
 ##	- g_allPatients = "patient1 patient2 ..." 
 ##	- g_vcfINFOS(ID) = "chrom pos ref alt rsID rsValidation patient1:homhet:dp:nr:qual patient2:homhet:dp:nr:qual ..."
-##	  If ID is absent from patient1, so "patient1:homhet:dp:nr:qual" is not put in memory.
+##	  >> If ID is absent from patient1, so "patient1:homhet:dp:nr:qual" is not put in memory.
 ##      - $g_VaRank(vcfDir)/VCF_Coordinates_Conversion.tsv
 ##
 ##  Empty data (./.) and wild type variation are filtered out for every patient individually

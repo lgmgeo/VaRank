@@ -74,69 +74,67 @@ proc configureVaRank {argv} {
     puts "\t...configuration data by default"
     regsub "sources" $g_VaRank(sourcesDir) "pph2Databases" pph2Dir
 
-    set g_VaRank(javaPath) "java"
-
-    set g_VaRank(Homstatus)  "no"
-    set g_VaRank(Homcutoff)   80
-
-    set g_VaRank(vcfInfo)    "no"
-    set g_VaRank(vcfFields)  {all}
-    set g_VaRank(rsFromVCF)  "no"
-
-    set g_VaRank(MEScutoff)  -15
-    set g_VaRank(SSFcutoff)  -5
-    set g_VaRank(NNScutoff)  -10
-    set g_VaRank(phastConsCutoff) 0.95
-    set g_VaRank(readFilter)  10
-    set g_VaRank(depthFilter) 10
-    set g_VaRank(rsFilter)   removeNonPathoRS
-    set g_VaRank(freqFilter) 0.01
-    set g_VaRank(readPercentFilter) 15
-    set g_VaRank(metrics) "us"
-    set g_VaRank(extann)  ""
-
-    set g_VaRank(S_Known)      110
-    set g_VaRank(S_StopGain)   100
-    set g_VaRank(S_Fs)         100
-    set g_VaRank(S_EssentialSplice) 90
-    set g_VaRank(S_StartLoss)   80
-    set g_VaRank(S_StopLoss)    80
-    set g_VaRank(S_Missense)    50
-    set g_VaRank(S_CloseSplice) 70
-    set g_VaRank(S_LSEstrong)   40
-    set g_VaRank(S_LSEweak)     35
-    set g_VaRank(S_Inframe)     30
-    set g_VaRank(S_DeepSplice)  25
-    set g_VaRank(S_Synonymous)  10
-    set g_VaRank(S_ExonIntron)   2
-    set g_VaRank(S_UTR)          1
-
+    set g_VaRank(AlamutAlltrans) "yes"
+    set g_VaRank(alamutHumanDB) "GRCh37"
+    set g_VaRank(AlamutProcesses) 0
+    
     set g_VaRank(B_phastCons) 5 
     set g_VaRank(B_SIFT)      5
     set g_VaRank(B_PPH2)      5
 
-    set g_VaRank(uniprot) "$pph2Dir/HUMAN.fasta.gz"
-    set g_VaRank(refseq)  "$pph2Dir/human.protein.faa.gz"
-
-    set g_VaRank(proxyUser)   ""
-    set g_VaRank(proxyPasswd) "password"
-    set g_VaRank(proxyServer) ""
-    set g_VaRank(proxyPort)   "8080"
-
-    set g_VaRank(alamutHumanDB) "GRCh37"
-
-    set g_VaRank(snpeffHumanDB) "" 
-    set g_VaRank(dbSNP)         ""
     set g_VaRank(dbNSFP)        ""
-    set g_VaRank(phastConsDB)   ""
-    set g_VaRank(msigdb)        ""
+    set g_VaRank(dbSNP)         ""
+    set g_VaRank(depthFilter)   10
+    set g_VaRank(extann)        ""
+    set g_VaRank(freqFilter)  0.01
+    set g_VaRank(Homstatus)   "no"
+    set g_VaRank(Homcutoff)     80
+    set g_VaRank(hpo)           "";# "HP:0030684,HP:0085622"
+    set g_VaRank(javaPath)  "java"
+
+    set g_VaRank(MEScutoff)          -15
+    set g_VaRank(metrics)           "us"
+    set g_VaRank(msigdb)              ""
+    set g_VaRank(NNScutoff)          -10
+    set g_VaRank(phastConsCutoff)   0.95
+    set g_VaRank(phastConsDB)         ""
+    set g_VaRank(proxyPasswd) "password"
+    set g_VaRank(proxyPort)       "8080"
+    set g_VaRank(proxyServer)         ""
+    set g_VaRank(proxyUser)           ""
+    set g_VaRank(readFilter)          10
+    set g_VaRank(readPercentFilter)   15
+    set g_VaRank(refseq)     "$pph2Dir/human.protein.faa.gz"
+    set g_VaRank(rsFilter)   removeNonPathoRS
+    set g_VaRank(rsFromVCF)          "no"
+
+    set g_VaRank(S_Known)          110
+    set g_VaRank(S_CloseSplice)     70
+    set g_VaRank(S_DeepSplice)      25
+    set g_VaRank(S_EssentialSplice) 90
+    set g_VaRank(S_ExonIntron)       2
+    set g_VaRank(S_Fs)             100
+    set g_VaRank(S_Inframe)         30
+    set g_VaRank(S_LSEstrong)       40
+    set g_VaRank(S_LSEweak)         35
+    set g_VaRank(S_Missense)        50
+    set g_VaRank(S_StartLoss)       80
+    set g_VaRank(S_StopGain)       100
+    set g_VaRank(S_StopLoss)        80
+    set g_VaRank(S_Synonymous)      10
+    set g_VaRank(S_UTR)              1
+
+    set g_VaRank(snpeffHumanDB)     "" 
     set g_VaRank(SnpEffTestsDir) "SnpEffTests"
+    set g_VaRank(SSFcutoff)         -5
 
-    set g_VaRank(SamVa)  "no"
-    set g_VaRank(SamOut) "all"
+    set g_VaRank(SamOut)         "all"
+    set g_VaRank(SamVa)           "no"
 
-    set g_VaRank(AlamutProcesses) 0
-    set g_VaRank(AlamutAlltrans) "yes"
+    set g_VaRank(uniprot) "$pph2Dir/HUMAN.fasta.gz"
+
+    set g_VaRank(vcfFields)  {all}
+    set g_VaRank(vcfInfo)    "no"
 
 
     set g_VaRank(L_outputColHeader) "variantID gene rsID chr start end ref alt zygosity totalReadDepth varReadDepth varReadPercent QUALphred Uniprot codingEffect varLocation exon intron varType Annotation_Impact Gene_ID Feature_Type Feature_ID Transcript_BioType cNomen pNomen wtAA_1 posAA varAA_1 cDNA.pos cDNA.length CDS.pos CDS.length AA.pos AA.length Distance LOF NMD dbNSFP_1000Gp1_AF dbNSFP_1000Gp1_AFR_AF dbNSFP_1000Gp1_AMR_AF dbNSFP_1000Gp1_ASN_AF dbNSFP_1000Gp1_EUR_AF dbNSFP_CADD_phred dbNSFP_ExAC_AC dbNSFP_ExAC_AF dbNSFP_ExAC_AFR_AC dbNSFP_ExAC_AFR_AF dbNSFP_ExAC_AMR_AC dbNSFP_ExAC_AMR_AF dbNSFP_ExAC_Adj_AC dbNSFP_ExAC_Adj_AF dbNSFP_ExAC_EAS_AC dbNSFP_ExAC_EAS_AF dbNSFP_ExAC_FIN_AC dbNSFP_ExAC_FIN_AF dbNSFP_ExAC_NFE_AC dbNSFP_ExAC_NFE_AF dbNSFP_ExAC_SAS_AC dbNSFP_ExAC_SAS_AF dbNSFP_FATHMM_pred dbNSFP_GERP___NR dbNSFP_GERP___RS dbNSFP_LRT_pred dbNSFP_MetaSVM_pred dbNSFP_MutationAssessor_pred dbNSFP_MutationTaster_pred dbNSFP_PROVEAN_pred dbNSFP_Polyphen2_HDIV_pred dbNSFP_Polyphen2_HVAR_pred dbNSFP_SIFT_pred phastCons SIFTprediction PPH2class varankVarScore annotationAnalysis avgTotalDepth sdTotalDepth countTotalDepth avgVariantDepth sdVariantDepth countVariantDepth familyBarcode barcode homCount hetCount alleleCount sampleCount alleleFrequency samVa"
@@ -146,7 +144,7 @@ proc configureVaRank {argv} {
     
     ## Load config file options and output column names
     ###################################################
-    set lOptionsOk "javaPath vcfDir Homstatus Homcutoff vcfInfo rsFromVCF MEScutoff SSFcutoff NNScutoff phastConsCutoff readFilter depthFilter rsFilter freqFilter readPercentFilter metrics extann S_Known S_StopGain S_Fs S_EssentialSplice S_StartLoss S_StopLoss S_Missense S_CloseSplice S_LSEstrong S_LSEweak S_Inframe S_DeepSplice S_Synonymous S_ExonIntron S_UTR B_phastCons B_SIFT B_PPH2 uniprot refseq proxyUser proxyPasswd proxyServer proxyPort alamutHumanDB snpeffHumanDB dbSNP dbNSFP phastConsDB msigdb SnpEffTestsDir SamVa SamOut AlamutProcesses AlamutAlltrans vcfFields"
+    set lOptionsOk "AlamutAlltrans alamutHumanDB AlamutProcesses B_phastCons B_PPH2 B_SIFT dbNSFP dbSNP depthFilter extann freqFilter Homcutoff Homstatus hpo javaPath MEScutoff metrics msigdb NNScutoff phastConsCutoff phastConsDB proxyPasswd proxyPort proxyServer proxyUser readFilter readPercentFilter refseq rsFilter rsFromVCF S_CloseSplice S_DeepSplice S_EssentialSplice S_ExonIntron S_Fs S_Inframe S_Known S_LSEstrong S_LSEweak S_Missense S_StartLoss S_StopGain S_StopLoss S_Synonymous  S_UTR SamOut SamVa snpeffHumanDB SnpEffTestsDir SSFcutoff uniprot vcfDir vcfFields vcfInfo"
     set L_outputColHeaderBis ""
     set configFile "$g_VaRank(vcfDir)/configfile"
     if {[file exists $configFile]} {
@@ -189,7 +187,7 @@ proc configureVaRank {argv} {
     ## Load options given in arguments
     ##################################
     puts "\t...configuration data given in arguments"
-    regsub -all "^-|:" $argv "" argv
+    regsub -all "^-" $argv "" argv
     set i 0
     set j 1
     while {$j < [llength $argv]} {
@@ -246,7 +244,6 @@ proc configureVaRank {argv} {
     if {$g_VaRank(refseq) eq "" && [file exists "$pph2Dir/human.protein.faa.gz"]} {set g_VaRank(refseq) "$pph2Dir/human.protein.faa.gz"}
     
     ## It must be external annotation files (one or several, tsv) for the "-extann" option
-    regsub "sources" $g_VaRank(sourcesDir) "ExtAnn" extAnnDir
     ## Check that extann files exist and are tsv.
     foreach extFile $g_VaRank(extann) {
 	if {![file exists $extFile] && $extFile ne ""} {
@@ -258,7 +255,9 @@ proc configureVaRank {argv} {
 	}
     }
     ## Automaticly add the files contained in the /ExtAnn directory
+    regsub "sources" $g_VaRank(sourcesDir) "ExtAnn" extAnnDir
     foreach annotFile [glob -nocomplain $extAnnDir/*] {
+	if {[regexp "^README$|^results.txt$" [file tail $annotFile]]} {continue}
 	lappend g_VaRank(extann) $annotFile
     }
     ## Sort -unique on all these files
@@ -320,6 +319,26 @@ proc configureVaRank {argv} {
 	exit
     }
     
+    # It must be a comma, semicolon or space separated class values, default = ""
+    # (e.g.: "HP:0001156,HP:0001363,HP:0011304")
+    set g_VaRank(hpo) [split $g_VaRank(hpo) ",|;| "]
+    set L_correctHPO {}
+    set L_display ""
+    foreach hpo $g_VaRank(hpo) {
+        if {[regexp "^HP:\[0-9\]+$" $hpo]} {
+            lappend L_correctHPO $hpo
+        } else {
+            lappend L_display "Bad format for the HPO term: $hpo. Not used."
+        }
+    }
+    if {$L_display ne ""} {
+        puts "############################################################################"
+        puts "[join $L_display "\n"]"
+        puts "############################################################################"
+    }
+    set g_VaRank(hpo) [join $L_correctHPO ","]
+
+
     if {[info exists g_VaRank(snpeffDir)]} {
 
 	## javaPath file be correct
@@ -405,9 +424,10 @@ proc configureVaRank {argv} {
     puts "\t******************************************"
     set lKey [array names g_VaRank]
     foreach key [lsort $lKey] {
-	puts "\t-$key $g_VaRank($key)"
+	if {$key eq "L_outputColHeader"} {continue}
+	puts "\t-[format "%-20s %s" $key $g_VaRank($key)]"
     }
-    puts "\t******************************************"
+    puts "\t******************************************\n"
     
 
     return	
