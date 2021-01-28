@@ -4,7 +4,7 @@ What        	Total	Homozygous	Heterozygous	Null
 downstream  	0	0	0	0
 frameshift  	0	0	0	0
 in-frame    	0	0	0	0
-intron      	0	0	0	0
+intron      	1	0	1	0
 missense    	1	1	0	0
 splice site 	0	0	0	0
 start loss  	0	0	0	0
@@ -14,4 +14,4 @@ synonymous  	0	0	0	0
 upstream    	0	0	0	0
 unknown     	0	0	0	0
 
-Total:  3 variations.
+Total:  4 variations.

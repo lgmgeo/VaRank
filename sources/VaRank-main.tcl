@@ -231,7 +231,7 @@ if {[createPPH2Input]!=0} {
 ## Preparation of the phenotype-driven analysis (Exomiser)
 set L_allGenes [searchForAllGenesContainingVariants]
 if {$g_VaRank(hpo) ne "" && $L_allGenes ne ""} {
-    checkExomiserInstallation
+    checkExomiserInstallation "$L_allGenes"
     runExomiser "$L_allGenes" "$g_VaRank(hpo)"
 }
 

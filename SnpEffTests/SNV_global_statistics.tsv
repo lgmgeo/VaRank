@@ -6,7 +6,7 @@ What        	Total	Mean	SD
 downstream  	0	NA	NA
 frameshift  	0	NA	NA
 in-frame    	0	NA	NA
-intron      	0	NA	NA
+intron      	1	1	0
 missense    	1	1	0
 splice site 	0	NA	NA
 start loss  	0	NA	NA
@@ -16,4 +16,4 @@ synonymous  	0	NA	NA
 upstream    	0	NA	NA
 unknown     	0	NA	NA
 
-Total       	3	NA
+Total       	4	NA

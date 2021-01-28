@@ -672,11 +672,13 @@ proc writeAllVariantsRankingByVar {} {
     set i_gene [lsearch -exact [split $g_ANNOTATION(#id) "\t"] "gene"]
 
     foreach ID [set g_vcfINFOS(L_IDs)] {
-	#foreach ID [array names g_vcfINFOS] {}
+	# foreach ID [array names g_vcfINFOS] {}
 	if {[info exists g_ANNOTATION($ID)]} {continue}
+	# Variation is computed but no patient has it... (GT=0/0 for all patients)
+	if {![info exists g_vcfINFOS($ID)]} {continue}
 
 	set variantID $ID
-	set varankVarScore 
+	set varankVarScore ""
 	set chr   [lindex $g_vcfINFOS($ID) 0]
 	set start [lindex $g_vcfINFOS($ID) 1]
 	set ref   [lindex $g_vcfINFOS($ID) 2]
@@ -724,8 +726,8 @@ proc writeAllVariantsRankingByVar {} {
 	# Definition of the following values:
 	# barcode homCount hetCount alleleCount sampleCount avgVariantDepth sdVariantDepth countVariantDepth avgTotalDepth sdTotalDepth countTotalDepth
 	# alleleFrequency
-	set infos           ""
-	set infos           [findBarcodesAndStatFor $ID]
+	set infos   ""
+	set infos   [findBarcodesAndStatFor $ID]
 	lassign $infos barcode homCount hetCount alleleCount sampleCount avgVariantDepth sdVariantDepth countVariantDepth avgTotalDepth sdTotalDepth countTotalDepth
 
 	set alleleFrequency [format "%.4f" [expr {$alleleCount*1.0/2/$sampleCount}]]
@@ -761,8 +763,7 @@ proc writeAllVariantsRankingByVar {} {
 	# Then append all annotations (non specific + specific) to the "RankingText(patient)" variable
 	foreach fam [array names g_lPatientsOf] {
 	    foreach patient $g_lPatientsOf($fam) {
-		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-		
+		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		
 		if {![info exists g_vcfINFOS($ID,$patient)]} {continue}
 
 		set familyBarcode "'$g_famBarcode($fam)'"

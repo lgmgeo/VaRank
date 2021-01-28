@@ -98,22 +98,33 @@ proc startTheRESTservice {applicationPropertiesTmpFile port exomiserStartService
 
 
 ## - Check if the exomiser installation is ok
-proc checkExomiserInstallation {} {
+proc checkExomiserInstallation {L_Genes} {
 
     global g_VaRank
     global hpoVersion
     
+    puts "...running Exomiser on [llength $L_Genes] gene names ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+
     ## Checked if the NCBIgeneID file exists
     regsub "sources" $g_VaRank(sourcesDir) "ExtAnn" extannDir
     if {![file exists "$extannDir/results.txt"]} {
 	puts "\nWARNING: No Exomiser annotations available."
 	puts "...$extannDir/results.txt doesn't exist"
 	set g_VaRank(hpo) ""
+	return
     }
     
-    ## Checked if the Exomiser data files exist
-    ## + HPO citation
+    ## Checked if the Exomiser annotation data files exist
+    ## Download it if needed
     regsub "sources" $g_VaRank(sourcesDir) "Annotations_Exomiser" exomiserDir
+    if {![file exists $exomiserDir/2007]} {
+	puts "...downloading Exomiser supporting data files"
+	puts "   (done only once during the first Exomiser annotation)"
+	if {[catch {eval exec $g_VaRank(sourcesDir)/../bash/downloadExomiserAnnotation.bash} Message]} {
+	    puts $Message
+	}
+    }
+
     set L_hpoDir [glob -nocomplain $exomiserDir/*]
     set L_hpoDir_ok {}
     foreach hpoDir $L_hpoDir {
@@ -124,8 +135,9 @@ proc checkExomiserInstallation {} {
     if {$L_hpoDir_ok ne ""} {
 	set hpoVersion [lindex [lsort -integer $L_hpoDir_ok] end]
 	if {$g_VaRank(hpo) ne ""} {
-	    puts "INFO: VaRank takes use of Exomiser (Smedley et al., 2015) for the phenotype-driven analysis."
-	    puts "INFO: VaRank is using the Human Phenotype Ontology (version $hpoVersion). Find out more at http://www.human-phenotype-ontology.org"
+	    ## HPO citation
+	    puts "\tINFO: VaRank takes use of Exomiser (Smedley et al., 2015) for the phenotype-driven analysis."
+	    puts "\tINFO: VaRank is using the Human Phenotype Ontology (version $hpoVersion). Find out more at http://www.human-phenotype-ontology.org"
 	}
     } else {
 	puts "\nWARNING: No Exomiser annotations available in $exomiserDir/\n"
@@ -194,16 +206,17 @@ proc searchForAllGenesContainingVariants {} {
     set L_allGenes ""
     foreach id [array names g_ANNOTATION] {
 	if {$id eq "#id"} {continue}
-	set gene [lindex [split $g_ANNOTATION($id) "\t"] $i_gene]
-	foreach g [split $gene "/"] {
-	    regsub -all "{|}" $g "" g
-	    lappend L_allGenes $g
+	foreach ann "$g_ANNOTATION($id)" {
+	    set gene [lindex [split $ann "\t"] $i_gene]
+	    foreach g [split $gene "/"] {
+		regsub -all "{|}" $g "" g
+		lappend L_allGenes $g
+	    }
 	}
     }
-    
     set L_allGenes [lsort -unique $L_allGenes]
-    puts "   ([llength $L_allGenes] genes)"
-    
+    puts "\t([llength $L_allGenes] genes)"
+
     return $L_allGenes
 }
 
@@ -219,12 +232,13 @@ proc runExomiser {L_Genes L_HPO} {
     global g_VaRank
     global hpoVersion
     global g_Exomiser
-    
+
+    if {$g_VaRank(hpo) eq ""} {return}
+
     regsub "sources" $g_VaRank(sourcesDir) "Annotations_Exomiser" exomiserDir
     regsub "sources" $g_VaRank(sourcesDir) "bash" bashDir
     regsub "sources" $g_VaRank(sourcesDir) "etc"  etcDir
 
-    puts "...running Exomiser on [llength $L_Genes] gene names ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
     # Tcl 8.5 is required for use of the json package.
     package require http
     package require json 1.3.3
@@ -252,7 +266,7 @@ proc runExomiser {L_Genes L_HPO} {
 	    
 	    # Search the geneID of the geneName
 	    set geneID [searchforGeneID $geneName]
-	    
+
 	    # Check if the information exists
 	    if {$geneID eq ""} {continue}
 	    
@@ -324,6 +338,7 @@ proc runExomiser {L_Genes L_HPO} {
 	    set FISH_PHENO_EVIDENCE  [lsort -unique $FISH_PHENO_EVIDENCE]; if {$FISH_PHENO_EVIDENCE eq ""} {set FISH_PHENO_EVIDENCE "NA"}
 	    
 	    set g_Exomiser($geneName) "$EXOMISER_GENE_PHENO_SCORE\t[join $HUMAN_PHENO_EVIDENCE ";"]\t[join $MOUSE_PHENO_EVIDENCE ";"]\t[join $FISH_PHENO_EVIDENCE ";"]"
+
 	}
 	
 	# End the REST service
@@ -338,7 +353,6 @@ proc runExomiser {L_Genes L_HPO} {
     # Remove tmp files
     file delete -force $applicationPropertiesTmpFile
     
-
     return ""
 }
 
