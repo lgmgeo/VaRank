@@ -309,7 +309,8 @@ proc writeAllVariantsRankingByVar {} {
     global g_perso
     global g_Statistics
     global env
-    
+
+    puts $g_ANNOTATION(5_254636_C_T)
     
     ## Delete output files if they already exist: 
     #############################################
@@ -409,11 +410,11 @@ proc writeAllVariantsRankingByVar {} {
     ## g_lScore is sorted in descending order of scores (with no more redundancy).
     ##############################################################################
     puts "...organizing ranking output from annotated data ([llength $g_lScore] scores) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+
     foreach duoIDscore $g_lScore {
 	set ID [lindex $duoIDscore 0]
 	set varankVarScore [lindex $duoIDscore 1]
 	set L [split $g_ANNOTATION($ID) "\t"]
-
 	# puts "$ID - $L"
 
 	# Variation is computed but no patient has it...

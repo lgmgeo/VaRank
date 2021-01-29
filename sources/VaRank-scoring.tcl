@@ -127,28 +127,29 @@ proc scoreAllTheID {} {
     set i_var       [lsearch -regexp $L "^varAA_1$"]; if {$i_var     == -1} {puts "column number not found for varAA_1 - Exit"; exit}
 
     # for scoring
-    set i_gene      [lsearch -exact $L "gene"];           if {$i_gene   == -1} {puts "column number not found for gene - Exit"; exit}
-    set i_trans     [lsearch -exact $L "transcript"];     
-    set i_length    [lsearch -exact $L "transLen"];      
-    set i_clinic    [lsearch -exact $L "rsClinicalSignificance"];
-    set i_clinic2   [lsearch -exact $L "clinVarClinSignifs"];
-    set i_effect    [lsearch -exact $L "codingEffect"];   if {$i_effect == -1} {puts "column number not found for codingEffect - Exit"; exit}
-    set i_varType   [lsearch -regexp $L "^varType$"];     if {$i_varType  == -1} {puts "column number not found for varType - Exit"; exit}
+    set i_gene        [lsearch -exact $L "gene"];           if {$i_gene   == -1} {puts "column number not found for gene - Exit"; exit}
+    set i_trans       [lsearch -exact $L "transcript"];     
+    set i_transLength [lsearch -exact $L "transLen"];      
+    set i_CDSlength   [lsearch -exact $L "cdsLen"];      
+    set i_clinic      [lsearch -exact $L "rsClinicalSignificance"];
+    set i_clinic2     [lsearch -exact $L "clinVarClinSignifs"];
+    set i_effect      [lsearch -exact $L "codingEffect"];   if {$i_effect == -1} {puts "column number not found for codingEffect - Exit"; exit}
+    set i_varType     [lsearch -regexp $L "^varType$"];     if {$i_varType  == -1} {puts "column number not found for varType - Exit"; exit}
 
-    set i_distSS    [lsearch -exact $L "distNearestSS"];  
-    set i_nearSS    [lsearch -exact $L "nearestSSType"]; 
-    set i_lse       [lsearch -exact $L "localSpliceEffect"];
-    set i_varlocation    [lsearch -exact $L "varLocation"];    if {$i_varlocation == -1} {puts "column number not found for varLocation - Exit"; exit}
-    set i_wtSSF     [lsearch -exact $L "wtSSFScore"];    
-    set i_wtMES     [lsearch -exact $L "wtMaxEntScore"]; 
-    set i_wtNNS     [lsearch -exact $L "wtNNSScore"];     
-    set i_varSSF    [lsearch -exact $L "varSSFScore"];   
-    set i_varMES    [lsearch -exact $L "varMaxEntScore"]; 
-    set i_varNNS    [lsearch -exact $L "varNNSScore"];   
+    set i_distSS      [lsearch -exact $L "distNearestSS"];  
+    set i_nearSS      [lsearch -exact $L "nearestSSType"]; 
+    set i_lse         [lsearch -exact $L "localSpliceEffect"];
+    set i_varlocation [lsearch -exact $L "varLocation"];    if {$i_varlocation == -1} {puts "column number not found for varLocation - Exit"; exit}
+    set i_wtSSF       [lsearch -exact $L "wtSSFScore"];    
+    set i_wtMES       [lsearch -exact $L "wtMaxEntScore"]; 
+    set i_wtNNS       [lsearch -exact $L "wtNNSScore"];     
+    set i_varSSF      [lsearch -exact $L "varSSFScore"];   
+    set i_varMES      [lsearch -exact $L "varMaxEntScore"]; 
+    set i_varNNS      [lsearch -exact $L "varNNSScore"];   
 
-    set i_siftPred  [lsearch -exact $L "SIFTprediction"]; if {$i_siftPred  == -1} {puts "column number not found for SIFTprediction - Exit"; exit}
-    set i_siftMed   [lsearch -exact $L "SIFTmedian"];     
-    set i_phastcons [lsearch -exact $L "phastCons"];      if {$i_phastcons == -1} {puts "column number not found for phastCons - Exit"; exit}
+    set i_siftPred    [lsearch -exact $L "SIFTprediction"]; if {$i_siftPred  == -1} {puts "column number not found for SIFTprediction - Exit"; exit}
+    set i_siftMed     [lsearch -exact $L "SIFTmedian"];     
+    set i_phastcons   [lsearch -exact $L "phastCons"];      if {$i_phastcons == -1} {puts "column number not found for phastCons - Exit"; exit}
 
     #set i_phylop [lsearch -exact $L "phyloP"]; if {$i_phylop == -1} {puts "column number not found for phyloP - Exit"; exit}
 
@@ -157,7 +158,8 @@ proc scoreAllTheID {} {
 	if {$ID == "#id"} {continue}
 	set score      0
 	set bestScore  0
-	set bestLength 0
+	set bestTransLength 0
+	set bestCDSlenght 0
 	set allGene   {}
 	set bestGene ".."
 
@@ -172,7 +174,8 @@ proc scoreAllTheID {} {
 	    set score 0
 
 	    set trans     ""
-	    set length    ""
+	    set transLength ""
+	    set CDSlength ""
 	    set gene      ""
 	    set effect    ""
 	    set varType   ""
@@ -188,7 +191,8 @@ proc scoreAllTheID {} {
 	    set varType   [lindex $L $i_varType]
 	    set trans  [lindex $L $i_trans]  
 
-	    set length [lindex $L $i_length]   
+	    set transLength [lindex $L $i_transLength]   
+	    set CDSlength [lindex $L $i_CDSlength]   
 	    set gene   [lindex $L $i_gene]     
 	    if {![regexp -nocase "$gene" $allGene]} {lappend allGene $gene}
 	    
@@ -377,21 +381,32 @@ proc scoreAllTheID {} {
 		set bestGene   $gene
 		set bestL      $L
 		set bestScore  $score
-		set bestLength $length
+		set bestTransLength $transLength
+		set bestCDSlength $CDSlength
 
 		set g_PPH2($ID) $thePPH2
 	
 	    } elseif {$score == $bestScore} {
 		#puts "equal"
 
-		if {$length > $bestLength || $length eq ""} {
+		if {$CDSlength > $bestCDSlength || $bestCDSlength eq ""} {
 		    #puts "Longer"
 		    set bestGene   $gene
 		    set bestL      $L
-		    set bestLength $length
+		    set bestCDSlength $CDSlength
+		    set bestTransLength $transLength
 
 		    set g_PPH2($ID) $thePPH2
 		   
+		} elseif {$CDSlength eq $bestCDSlength} {
+		    if {$transLength > $bestTransLength || $bestTransLength eq ""} {
+			#puts "Longer"
+			set bestGene   $gene
+			set bestL      $L
+			set bestTransLength $transLength
+			
+			set g_PPH2($ID) $thePPH2
+		    }
 		}
 	    }
 
@@ -413,9 +428,9 @@ proc scoreAllTheID {} {
 	    regsub -all -nocase "conflicting interpretations of pathogenicity" $clinicChanged "" clinicChanged
 
 	    if {[regexp -nocase "pathogenic" $clinicChanged]} {
-		lappend L_pathogenic "$gene $score $length"
-		set LineOfThePathogenicGene($gene,$length) $L
-	        set thePPH2OfThePathogenicGene($gene,$length) $thePPH2
+		lappend L_pathogenic "$gene $score $transLength"
+		set LineOfThePathogenicGene($gene,$transLength) $L
+	        set thePPH2OfThePathogenicGene($gene,$transLength) $thePPH2
 	    } 
 
 
@@ -427,10 +442,10 @@ proc scoreAllTheID {} {
 	    set top [lindex $L_pathogenic 0]
 	    set bestGene [lindex $top 0]
 	    set bestScore $g_VaRank(S_Known)
-	    set bestLength [lindex $top 2]
-            set g_PPH2($ID) $thePPH2OfThePathogenicGene($bestGene,$bestLength)
+	    set bestTransLength [lindex $top 2]
+            set g_PPH2($ID) $thePPH2OfThePathogenicGene($bestGene,$bestTransLength)
 	    array unset thePPH2OfThePathogenicGene "*"
-	    set bestL $LineOfThePathogenicGene($bestGene,$bestLength)
+	    set bestL $LineOfThePathogenicGene($bestGene,$bestTransLength)
 	    array unset LineOfThePathogenicGene "*"
 	} 
 
