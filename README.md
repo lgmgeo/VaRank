@@ -6,7 +6,7 @@ https://lbgi.fr/VaRank/
 1. The sources can be cloned to any directory:
 ```
 cd /path/to/install/
-git clone https://github.com/lgmgeo/VaRank.git
+git clone git@github.com:lgmgeo/VaRank.git
 ```
 
 2. Set the VARANK global environmental variable as the location of the git repo on your system. 
@@ -21,15 +21,16 @@ export VARANK=/path/to/install/VaRank
 ```
 3. Set the ALAMUT/SNPEFF global environmental variable.
 Depending on the selected annotation engine:
-- $ALAMUT : Alamut Batch installation directory
-- $SNPEFF : SnpEff and SnpSift installation directory
+- $ALAMUT: Alamut Batch installation directory
+- $SNPEFF: SnpEff and SnpSift installation directory
 
-## TEST
+## TEST with the Alamut annotation engine
 
 1. Change to the repo directory, and run the test
 ```
-cd /path/to/install/VaRank/bin/VaRank/SnpEffTests/
-$VARANK/bin/VaRank -vcfdir "."
+cd $VARANK/Tests/Alamut/
+
+$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1" -hpo "HP:0001156,HP:0001363,HP:0011304"
 ```
 2. Examine the outputs (fam1_Sample1_*)
 
