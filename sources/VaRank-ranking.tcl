@@ -310,7 +310,6 @@ proc writeAllVariantsRankingByVar {} {
     global g_Statistics
     global env
 
-    puts $g_ANNOTATION(5_254636_C_T)
     
     ## Delete output files if they already exist: 
     #############################################

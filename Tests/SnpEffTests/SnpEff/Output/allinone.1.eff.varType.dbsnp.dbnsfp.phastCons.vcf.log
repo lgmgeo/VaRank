@@ -1,0 +1,4 @@
+SnpEff started: February 01 2021 - 09:14
+
+java -Xmx4g -jar /biolo/NGS/SnpEff/SnpEff-latest/SnpSift.jar phastCons /biolo/NGS/SnpEff/SnpEff-latest/db/phastCons/ ./SnpEff/Output/allinone.1.eff.varType.dbsnp.dbnsfp.vcf > ./SnpEff/Output/allinone.1.eff.varType.dbsnp.dbnsfp.phastCons.vcf
+

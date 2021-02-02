@@ -1,9 +1,0 @@
-# Command line without phenotype-driven analysis:
-cd $VARANK/SnpEffTests/
-$VARANK/bin/VaRank -vcfDir "."
-
-# Command line with phenotype-driven analysis:
-cd $VARANK/SnpEffTests/
-$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1" -hpo "HP:0001156,HP:0001363,HP:0011304"
-
-

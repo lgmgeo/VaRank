@@ -1,0 +1,27 @@
+## Tests with Alamut:
+#####################
+
+cd $VARANK/Tests/AlamutTests/
+
+# Command line without phenotype-driven analysis:
+$VARANK/bin/VaRank -vcfDir "." 
+$VARANK/bin/VaRank -vcfDir "." -alamutHumanDB "GRCh38"
+
+# Command line with phenotype-driven analysis:
+$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1" -hpo "HP:0001156,HP:0001363,HP:0011304"
+
+
+## Tests with SnpEff:
+#####################
+
+cd $VARANK/Tests/SnpEffTests/
+unsetenv ALAMUT
+
+# Command line without phenotype-driven analysis:
+$VARANK/bin/VaRank -vcfDir "." -snpeffHumanDB GRCh37.75 -dbNSFP $SNPEFF/db/dbNSFP/GRCh37/20210130_dbNSFP4.1.a_GRCh37.txt.gz -dbSNP $SNPEFF/db/dbSNP/GRCh37/All_20180423_GRCh37.vcf.gz -phastConsDB $SNPEFF/db/phastCons/
+$VARANK/bin/VaRank -vcfDir "." -snpeffHumanDB GRCh38.86 -dbNSFP $SNPEFF/db/dbNSFP/GRCh38/20210130_dbNSFP4.1.a_GRCh38.txt.gz -dbSNP $SNPEFF/db/dbSNP/GRCh38/All_20180418_GRCh38.vcf.gz -phastConsDB $SNPEFF/db/phastCons/
+
+# Command line with phenotype-driven analysis:
+$VARANK/bin/VaRank -vcfDir "." -snpeffHumanDB GRCh37.75 -dbNSFP $SNPEFF/db/dbNSFP/20210130_dbNSFP4.1.a_GRCh37.txt.gz -dbSNP $SNPEFF/db/dbSNP/GRCh37/All_20180423_GRCh37.vcf.gz -phastConsDB $SNPEFF/db/phastCons/ -SamOut "Sample1" -hpo "HP:0001156,HP:0001363,HP:0011304"
+
+

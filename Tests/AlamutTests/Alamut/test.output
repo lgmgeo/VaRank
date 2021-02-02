@@ -1,0 +1,197 @@
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh37
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 2/1/21 9:27 AM
+Loading GRCh37 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
+Starting annotation task...
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+Annotation batch finished 2/1/21 9:27 AM
+Duration: 3 seconds
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh37
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 2/1/21 9:28 AM
+Loading GRCh37 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
+Starting annotation task...
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+Annotation batch finished 2/1/21 9:28 AM
+Duration: 1 seconds
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh37
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 2/1/21 9:31 AM
+Loading GRCh37 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
+Starting annotation task...
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+Annotation batch finished 2/1/21 9:31 AM
+Duration: 1 seconds
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh38
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 2/1/21 9:31 AM
+Loading GRCh38 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 100 vertebrates
+Starting annotation task...
+id: 	GRCh38/TMEM151A/NM_153266.3: Miscalled variant?
+Annotation batch finished 2/1/21 9:31 AM
+Duration: 0 seconds
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh37
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 2/1/21 9:31 AM
+Loading GRCh37 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
+Starting annotation task...
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+Annotation batch finished 2/1/21 9:31 AM
+Duration: 1 seconds

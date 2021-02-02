@@ -1,0 +1,4 @@
+Q8NH21	141	T	A
+Q8NH21              	   141	    T	    A	          	Q8NH21    	   141	  T	  A	   	   	            benign	 sequence annotation	          	      NO	TRANSMEM	       0	-1.757	-2.932	-1.175	   2	    23	        	      	      	       	      	      	      	       	      	      	      	      	      	        	        	        	        	        	        	        	      	      	   	        	   PF13853.1	  26.402	  26.402	   91.15
+ERROR: fetch_txNuc: Failed to extract nucleotide sequence for transcript uc001aal.1: sh: 1: /biolo/NGS/PPH2/polyphen-2.2.2/bin/twoBitToFa: not found 
+

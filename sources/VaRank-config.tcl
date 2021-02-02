@@ -379,7 +379,7 @@ proc configureVaRank {argv} {
 		exit
 	    }
 	    ## It must be something like "db/dbSNP.2015-01-09_00-All.vcf" for the -dbSNP option.
-	    if {![regexp -nocase ".*.vcf$" $g_VaRank(dbSNP)]} {
+	    if {![regexp -nocase ".*.vcf(.gz)?$" $g_VaRank(dbSNP)]} {
 	        puts "############################################################################"
 		puts "Bad option value: -dbSNP = $g_VaRank(dbSNP)"
 		puts "Should be a file.vcf"
