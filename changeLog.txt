@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.4.4                                                                                             #
+# VaRank 1.5                                                                                               #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -13,11 +13,11 @@
 ############################################################################################################
 
 
-Jan 29, 2021: VaRank version 1.5 is posted
-feat: Include phenotype-driven annotations (HPO), based on Exomiser (Smedley et al., 2015)
+Feb 02, 2021: VaRank version 1.5 is posted
+- feat: Include phenotype-driven annotations (HPO), based on Exomiser (Smedley et al., 2015)
 	>> The "hpo" option can be used jointly with the "SamOut" option. This allows annotations to be added to samples sharing the same phenotype.
 	>> The download of Exomiser annotations is automatic (not distributed with the sources)
-feat: For a variant annotated on several transcripts of a same gene,  only a single transcript from all transcripts available for this gene is reported in the following order of preference:
+- feat: For a variant annotated on several transcripts of a same gene,  only a single transcript from all transcripts available for this gene is reported in the following order of preference:
 	>> The transcript with the best score
 	>> The transcript with the longest CDS
 	>> The transcript with the longest transcript 
