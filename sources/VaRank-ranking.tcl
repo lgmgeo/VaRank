@@ -497,9 +497,9 @@ proc writeAllVariantsRankingByVar {} {
 	    } elseif {$nearestSSType eq "3'" && $distNearestSS >= -12 && $distNearestSS <= 2} {
 		set localSpliceAnnotation "close splice acceptor"
 	    }
-	    set deltaMaxEntScorePercent "$g_deltaMES($ID,$transcript)"
-	    set deltaSSFscorePercent "$g_deltaSSF($ID,$transcript)"
-	    set deltaNNSscorePercent "$g_deltaNNS($ID,$transcript)" 
+	    if {[catch {set deltaMaxEntScorePercent "$g_deltaMES($ID,$transcript)"} Message]} {set deltaMaxEntScorePercent "NA"}
+	    if {[catch {set deltaSSFscorePercent "$g_deltaSSF($ID,$transcript)"   } Message]} {set deltaSSFscorePercent "NA"}
+	    if {[catch {set deltaNNSscorePercent "$g_deltaNNS($ID,$transcript)"   } Message]} {set deltaNNSscorePercent "NA"}
 	    #DEBUG
 	    #puts "$ID $transcript : $g_deltaMES($ID,$transcript)\t$varMaxEntScore\t$g_deltaSSF($ID,$transcript)"
 	}

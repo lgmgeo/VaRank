@@ -159,7 +159,7 @@ proc scoreAllTheID {} {
 	set score      0
 	set bestScore  0
 	set bestTransLength 0
-	set bestCDSlenght 0
+	set bestCDSlength 0
 	set allGene   {}
 	set bestGene ".."
 
@@ -388,7 +388,6 @@ proc scoreAllTheID {} {
 	
 	    } elseif {$score == $bestScore} {
 		#puts "equal"
-
 		if {$CDSlength > $bestCDSlength || $bestCDSlength eq ""} {
 		    #puts "Longer"
 		    set bestGene   $gene

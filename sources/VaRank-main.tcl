@@ -118,113 +118,30 @@ if {$argv == ""} {
 if {[regexp -nocase "help" $argv]} {showHelp; exit}
 
 ## Downloading configuration:
-if {[catch {configureVaRank $argv} Message]} {
-    puts "VaRank seems to have a problem during configuration step. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
-if {[catch {ExternalAnnotations} Message]} {
-    puts "VaRank seems to have a problem while downloading external annotation. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+configureVaRank $argv
+ExternalAnnotations
 
 ## Downloading VCF files data:
-if {[catch {parseVCFfiles} Message]} {
-    puts "VaRank seems to have a problem while parsing VCF files. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+parseVCFfiles
 
 if {[info exists g_VaRank(snpeffDir)]} {
     ## Creation of the SnpEff input files (containing non redundant variants)
-    if {[catch {createSnpEffInputFile} Message]} {
-	puts "VaRank seems to have a problem while creating the SnpEff input files. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    }
-    
-    ## Checking SnpEff program:
-    if {[catch {checkSnpEff} Message]} {
-	puts "VaRank seems to have a problem while checking SnpEff. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    } 
-    
-    ## Running SnpEff:
-    if {[catch {runSnpEff} Message]} {
-	puts "VaRank seems to have a problem while running SnpEff. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    } 
-    
-    ## Downloading SnpEff data:
-    if {[catch {parseSnpEffFile} Message]} {
-	puts "VaRank seems to have a problem while parsing the SnpEff annotation file. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    }   
+    createSnpEffInputFile
+    checkSnpEff
+    runSnpEff
+    parseSnpEffFile
 } else {
-    ## Creation of the alamut input file (1 for all patients)
-    if {[catch {createAlamutInputFile} Message]} {
-	puts "VaRank seems to have a problem while creating the Alamut Batch input file. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    }
-    ## Checking if pre-existing "AlamutAnnotations_all.txt" file is corrupted 
-    if {[catch {checkIfCorrupted} Message]} {
-	puts "VaRank seems to have a problem while running checks of the AlamutAnnotations_all.txt file. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    }     
-    ## Running alamut:
-    if {[catch {runAlamut} Message]} {
-	puts "VaRank seems to have a problem while running Alamut Batch. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    } 
-    ## Downloading alamut data:
-    if {[catch {parseAlamutFile} Message]} {
-	puts "VaRank seems to have a problem while parsing the Alamut Batch annotation file. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    } 
+    createAlamutInputFile
+    checkIfCorrupted
+    runAlamut
+    parseAlamutFile
 }
 
 ## Creation of the PolyPhen-2 input file:
 ## If no missense to be analyzed we skip this step
 if {[createPPH2Input]!=0} {
     ## Runnning PPH2:
-    if {[catch {runPPH2-1by1} Message]} {
-	changeModeOfPPH2lockFiles
-	puts "VaRank seems to have a problem while running PPH2. Exit"
-	puts "######################################################################"
-	puts "$Message"
-	puts "######################################################################"
-	exit
-    } 
+    runPPH2-1by1
     changeModeOfPPH2lockFiles
 } 
 
@@ -236,47 +153,18 @@ if {$g_VaRank(hpo) ne "" && $L_allGenes ne ""} {
 }
 
 ## Scoring genetic variants:
-if {[catch {scoreAllTheID} Message]} {
-    puts "VaRank seems to have a problem while scoring the variations. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+scoreAllTheID
+
 
 ## Writing output files
-if {[catch {writeAllVariantsRankingByVar} Message]} {
-    puts "VaRank seems to have a problem while writing output files (by var). Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
-if {[catch {writeAllVariantsRankingByGene} Message]} {
-    puts "VaRank seems to have a problem while writing output files (by gene). Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+writeAllVariantsRankingByVar
+writeAllVariantsRankingByGene
 
 ## Filtering the output files:
-if {[catch {executeFilters} Message]} {
-    puts "VaRank seems to have a problem while filtering the output files. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+executeFilters
 
 # Statistics
-if {[catch {writeAllStatistics} Message]} {
-    puts "VaRank seems to have a problem while writing statistics. Exit"
-    puts "######################################################################"
-    puts "$Message"
-    puts "######################################################################"
-    exit
-}
+writeAllStatistics
 
 if {[info exists g_Statistics(All)]} {
     if {$g_VaRank(SamOut)=="all"} {
