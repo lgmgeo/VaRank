@@ -26,11 +26,13 @@ Depending on the selected annotation engine:
 
 ## TEST with the Alamut annotation engine
 
-1. Change to the repo directory, and run the test
+1. Change to the repo directory, look at the configfile and run the test
 ```
 cd $VARANK/Tests/Alamut/
 
-$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1" -hpo "HP:0001156,HP:0001363,HP:0011304"
+cat configfile
+
+$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1 Sample2" 
 ```
-2. Examine the outputs (fam1_Sample1_*)
+2. Examine the outputs (*tsv)
 
