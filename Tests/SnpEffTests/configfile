@@ -1,0 +1,69 @@
+# This entry file is used to run the VaRank program.
+# Please, feel free to change the VaRank options.
+
+
+#------------------
+# Patient Families :
+#------------------
+
+
+#----------------------------
+# Phenotype-driven analysis :
+#----------------------------
+sample = Sample1
+HP:0000510,HP:0001513,HP:0001249,HP:0000365,HP:0004322,HP:0001251,HP:0001999
+
+sample = Sample2
+HP:0000510,HP:0007754,HP:0000609,HP:0001513,HP:0200055
+
+
+#-----------------
+# VaRank Options :
+#-----------------
+
+#-javaPath:              
+#-pph2DB:
+-depthFilter:           10
+-freqFilter:            0.01
+-Homcutoff:             80
+-Homstatus:             yes
+-MEScutoff:             -15
+-metrics:               fr
+-NNScutoff:             -10
+-phastConsCutoff:       0.95
+-readFilter:            10
+-readPercentFilter:     15
+-rsFilter:              removeNonPathoRS
+-rsFromVCF:             no
+-SSFcutoff:             -5
+-S_CloseSplice:         70
+-S_DeepSplice:          25
+-S_EssentialSplice:     90
+-S_Fs:                  100
+-S_Inframe:             30
+-S_Known:               110
+-S_Missense:            50
+-S_StopGain:            100
+-S_StartLoss:           80
+-S_StopLoss:            80
+-S_Synonymous:          10
+-S_LSEstrong:		40
+-S_LSEweak:		35
+-B_phastCons:		5
+-B_SIFT:		5
+-B_PPH2:		5
+-vcfInfo:               no
+-extann:                ""
+-alamutHumanDB:		"GRCh38"
+-snpeffHumanDB:		"GRCh38.86"
+-dbSNP:                 ""
+-dbNSFP:                ""
+-phastConsDB:           ""
+-msigdb:                ""
+-uniprot:               ""
+-refseq:                ""
+#-hgmdUser:               
+#-hgmdPasswd:             
+-SamVa:			yes
+
+

@@ -241,7 +241,8 @@ proc executeFilters {} {
 	    set l($id) $L
 		
 	    set score [lindex $Ls $i_score] 
-	    
+	    if {$score eq ""} {continue} 
+ 
 	    lappend lVariants($gene) "$id $score"
 	}
 	

@@ -71,6 +71,9 @@ proc checkAlamut {} {
     global g_donnsplice
 
     puts "\t...checking Alamut Batch ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+#    puts "!!!!!!!!!!!!!!!!! return !!!!!!!!!!!!!!!!!!!!!"
+#    if {![info exists g_donnsplice]} {set g_donnsplice ""}
+#    return
 
     if {![file exists $g_VaRank(vcfDir)/Alamut]} {file mkdir $g_VaRank(vcfDir)/Alamut}
 

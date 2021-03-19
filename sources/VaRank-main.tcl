@@ -41,6 +41,7 @@ global g_deltaMES
 global g_deltaNNS
 global g_Statistics
 global env
+global L_hpo
 
 ## Checking for environment variables needed (if all are defined).
 if {![info exists env(VARANK)]} {
@@ -62,7 +63,7 @@ if {[info exists env(PPH)] && $env(PPH)!=""} {
     set g_VaRank(pph2Dir) "$env(PPH)"
 } else {set g_VaRank(pph2Dir) ""}
 
-puts "Tcl/Tk version: [info tclversion]"
+puts "Tcl version: [info tclversion]"
 source $g_VaRank(sourcesDir)/VaRank-alamut.tcl
 source $g_VaRank(sourcesDir)/VaRank-config.tcl
 source $g_VaRank(sourcesDir)/VaRank-exomiser.tcl
@@ -145,11 +146,21 @@ if {[createPPH2Input]!=0} {
     changeModeOfPPH2lockFiles
 } 
 
-## Preparation of the phenotype-driven analysis (Exomiser)
-set L_allGenes [searchForAllGenesContainingVariants]
-if {$g_VaRank(hpo) ne "" && $L_allGenes ne ""} {
-    checkExomiserInstallation "$L_allGenes"
-    runExomiser "$L_allGenes" "$g_VaRank(hpo)"
+## Phenotype-driven analysis (Exomiser)
+if {[info exists L_hpo]} {
+    set L_3infos [checkExomiserInstallation] ;# {$port $applicationPropertiesTmpFile $idService}
+    foreach sample [array names L_hpo] {
+	set L_allGenes [searchForAllGenesContainingVariants $sample]
+	if {$L_hpo($sample) ne "" && $L_allGenes ne ""} {
+	    runExomiser "$sample" "$L_allGenes" "$L_hpo($sample)" "$L_3infos"
+	}
+    }
+    # End the REST service
+    set idService [lindex $L_3infos 2]
+    if {[catch {exec kill -9 $idService} Message]} {
+	puts "End the REST service:"
+	puts $Message
+    }
 }
 
 ## Scoring genetic variants:

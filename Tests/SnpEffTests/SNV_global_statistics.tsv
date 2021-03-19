@@ -3,9 +3,9 @@ Global statistics (non redundant) on 1 samples:
 What                  	Total	Mean	SD
 3_prime_UTR_variant   	1	1	0
 5_prime_UTR_variant   	1	1	0
-missense_variant      	1	1	0
+missense_variant      	2	2	0
 unknown               	0	0	0
-upstream_gene_variant 	1	1	0
+upstream_gene_variant 	0	NA	NA
 unknown               	0	0	0
 
 Total                 	4	NA

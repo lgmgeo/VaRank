@@ -30,12 +30,13 @@
 
 # Start the REST service for Exomiser
 # OUTPUT = pid of the command (or "" if the service has not been successfully started)
-proc startTheRESTservice {applicationPropertiesTmpFile port exomiserStartServiceFile} {
+proc startTheRESTservice {applicationPropertiesTmpFile port} {
 
     global g_VaRank
 
     regsub "sources" $g_VaRank(sourcesDir) "jar" jarDir
     set jarFile "$jarDir/exomiser-rest-prioritiser-12.1.0.jar"
+    set exomiserStartServiceFile "$g_VaRank(vcfDir)/[clock format [clock seconds] -format "%Y%m%d-%H%M%S"]_exomiser.tmp"
 
     # Run the service
 
@@ -44,7 +45,7 @@ proc startTheRESTservice {applicationPropertiesTmpFile port exomiserStartService
 	puts "The REST service has not been started successfully:"
 	puts "java -Xmx4g -jar $jarFile --server.port=$port --spring.config.location=$applicationPropertiesTmpFile >& $exomiserStartServiceFile"
 	puts "$Message"
-	set g_VaRank(hpo) ""
+	unset L_hpo
 	file delete -force $exomiserStartServiceFile
 	set idService ""
     } else {
@@ -86,31 +87,36 @@ proc startTheRESTservice {applicationPropertiesTmpFile port exomiserStartService
 	    puts "The REST service has not been started successfully:"
 	    puts "java -Xmx4g -jar $jarFile --server.port=$port --spring.config.location=$applicationPropertiesTmpFile >& $exomiserStartServiceFile"
 	    puts "(see $exomiserStartServiceFile)"
-	    set g_VaRank(hpo) ""
+	    unset L_hpo
 	    set idService ""
 	} else {
 	    # The REST service has been successfully started
 	    puts "\t...idService = $idService"
 	}
     }
+    
+    file delete -force $exomiserStartServiceFile
+
     return $idService
 }
 
 
 ## - Check if the exomiser installation is ok
-proc checkExomiserInstallation {L_Genes} {
+## - Start the REST service
+proc checkExomiserInstallation {} {
 
     global g_VaRank
     global hpoVersion
+    global L_hpo
     
-    puts "...running Exomiser on [llength $L_Genes] gene names ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+    puts "...running the phenotype-driven analysis ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
     ## Checked if the NCBIgeneID file exists
     regsub "sources" $g_VaRank(sourcesDir) "ExtAnn" extannDir
     if {![file exists "$extannDir/results.txt"]} {
-	puts "\nWARNING: No Exomiser annotations available."
-	puts "...$extannDir/results.txt doesn't exist"
-	set g_VaRank(hpo) ""
+	puts "\t\nWARNING: No Exomiser annotations available."
+	puts "\t...$extannDir/results.txt doesn't exist"
+	unset L_hpo
 	return
     }
     
@@ -118,13 +124,12 @@ proc checkExomiserInstallation {L_Genes} {
     ## Download it if needed
     regsub "sources" $g_VaRank(sourcesDir) "Annotations_Exomiser" exomiserDir
     if {![file exists $exomiserDir/2007]} {
-	puts "...downloading Exomiser supporting data files"
-	puts "   (done only once during the first Exomiser annotation)"
+	puts "\t...downloading Exomiser supporting data files"
+	puts "\t   (done only once during the first Exomiser annotation)"
 	if {[catch {eval exec $g_VaRank(sourcesDir)/../bash/downloadExomiserAnnotation.bash} Message]} {
 	    puts $Message
 	}
     }
-
     set L_hpoDir [glob -nocomplain $exomiserDir/*]
     set L_hpoDir_ok {}
     foreach hpoDir $L_hpoDir {
@@ -134,17 +139,37 @@ proc checkExomiserInstallation {L_Genes} {
     }
     if {$L_hpoDir_ok ne ""} {
 	set hpoVersion [lindex [lsort -integer $L_hpoDir_ok] end]
-	if {$g_VaRank(hpo) ne ""} {
+	if {[info exists L_hpo]} {
 	    ## HPO citation
 	    puts "\tINFO: VaRank takes use of Exomiser (Smedley et al., 2015) for the phenotype-driven analysis."
 	    puts "\tINFO: VaRank is using the Human Phenotype Ontology (version $hpoVersion). Find out more at http://www.human-phenotype-ontology.org"
 	}
     } else {
-	puts "\nWARNING: No Exomiser annotations available in $exomiserDir/\n"
-	set g_VaRank(hpo) ""
+	puts "\t\nWARNING: No Exomiser annotations available in $exomiserDir/\n"
+	unset L_hpo
     } 
     
-    return
+    # Creation of the temporary "application.properties" file
+    regsub "sources" $g_VaRank(sourcesDir) "Annotations_Exomiser" exomiserDir
+    regsub "sources" $g_VaRank(sourcesDir) "bash" bashDir
+    regsub "sources" $g_VaRank(sourcesDir) "etc"  etcDir
+    if {[catch {set port [exec bash $bashDir/searchForAFreePortNumber.bash]} Message]} {
+	puts "\t$Message"
+	puts "\tWARNING: port is defined to 50000"
+	set port 50000
+    }
+    puts "\t...on port $port"
+    set applicationPropertiesTmpFile "$g_VaRank(vcfDir)/[clock format [clock seconds] -format "%Y%m%d-%H%M%S"]_exomiser_application.properties"
+    set infos [ContentFromFile $etcDir/application.properties]
+    regsub "XXXX" $infos "$port" infos
+    regsub "YYYY" $infos "$exomiserDir/$hpoVersion" infos
+    WriteTextInFile $infos $applicationPropertiesTmpFile
+    
+    # Start the REST service
+    puts "\t...starting the REST service"
+    set idService [startTheRESTservice $applicationPropertiesTmpFile $port]
+
+    return "$port $applicationPropertiesTmpFile $idService"
 }
 
 
@@ -191,21 +216,22 @@ proc searchforGeneID {geneName} {
 }
 
 
-proc searchForAllGenesContainingVariants {} {
+proc searchForAllGenesContainingVariants {sample} {
 
     global g_VaRank
     global g_ANNOTATION
-
-    puts "...listing of all the genes overlapped with a variant"
+    global g_vcfINFOS
+    
     set i_gene [lsearch -regexp [split $g_ANNOTATION(#id) "\t"] "^gene"]
     if {$i_gene eq -1} {
-	puts "\twarning: column name \"gene\" not found in annotations. Exit."
+	puts "\t\twarning: column name \"gene\" not found in annotations. Exit."
 	exit
     }
 
     set L_allGenes ""
     foreach id [array names g_ANNOTATION] {
 	if {$id eq "#id"} {continue}
+	if {![regexp "$sample:" $g_vcfINFOS($id)]} {continue}
 	foreach ann "$g_ANNOTATION($id)" {
 	    set gene [lindex [split $ann "\t"] $i_gene]
 	    foreach g [split $gene "/"] {
@@ -215,7 +241,6 @@ proc searchForAllGenesContainingVariants {} {
 	}
     }
     set L_allGenes [lsort -unique $L_allGenes]
-    puts "\t([llength $L_allGenes] genes)"
 
     return $L_allGenes
 }
@@ -225,41 +250,31 @@ proc searchForAllGenesContainingVariants {} {
 # g_Exomiser($geneName) = EXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE
 # default = "\t-1.0\t\t\t"
 # INPUTS:
-# L_genes: e.g. "FGFR2"
-# L_HPO:   e.g. "HP:0001156,HP:0001363,HP:0011304,HP:0010055"
-proc runExomiser {L_Genes L_HPO} {
+# sample
+# L_genes:  e.g. "FGFR2"
+# L_HPO:    e.g. "HP:0001156,HP:0001363,HP:0011304,HP:0010055"
+# L_3infos: {$port $applicationPropertiesTmpFile $idService}
+proc runExomiser {sample L_Genes L_HPO L_3infos} {
     
     global g_VaRank
     global hpoVersion
     global g_Exomiser
-
-    if {$g_VaRank(hpo) eq ""} {return}
-
-    regsub "sources" $g_VaRank(sourcesDir) "Annotations_Exomiser" exomiserDir
-    regsub "sources" $g_VaRank(sourcesDir) "bash" bashDir
-    regsub "sources" $g_VaRank(sourcesDir) "etc"  etcDir
+    global L_hpo
+    
+    if {![info exists L_hpo($sample)]} {return}
+    if {$L_hpo($sample) eq ""} {return}
+    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $sample] eq -1} {return}
+    
+    puts "\t...$sample: running Exomiser on [llength $L_Genes] gene names ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
     # Tcl 8.5 is required for use of the json package.
     package require http
     package require json 1.3.3
-    
-    # Creation of the temporary "application.properties" file
-    if {[catch {set port [exec bash $bashDir/searchForAFreePortNumber.bash]} Message]} {
-	puts "$Message"
-	puts "WARNING: port is defined to 50000"
-	set port 50000
-    }
-    puts "\t...on port $port"
 
-    set applicationPropertiesTmpFile "$g_VaRank(vcfDir)/[clock format [clock seconds] -format "%Y%m%d-%H%M%S"]_exomiser_application.properties"
-    set infos [ContentFromFile $etcDir/application.properties]
-    regsub "XXXX" $infos "$port" infos
-    regsub "YYYY" $infos "$exomiserDir/$hpoVersion" infos
-    WriteTextInFile $infos $applicationPropertiesTmpFile
-    # Start the REST service
-    set exomiserStartServiceFile "$g_VaRank(vcfDir)/[clock format [clock seconds] -format "%Y%m%d-%H%M%S"]_exomiser.tmp"
-    puts "\t...starting the REST service"
-    set idService [startTheRESTservice $applicationPropertiesTmpFile $port $exomiserStartServiceFile]
+    set port                         [lindex $L_3infos 0]
+    set applicationPropertiesTmpFile [lindex $L_3infos 1]
+    set idService                    [lindex $L_3infos 2]
+    
     if {$idService ne ""} {
 	# Requests
 	foreach geneName $L_Genes {
@@ -337,17 +352,9 @@ proc runExomiser {L_Genes L_HPO} {
 	    set MOUSE_PHENO_EVIDENCE [lsort -unique $MOUSE_PHENO_EVIDENCE]; if {$MOUSE_PHENO_EVIDENCE eq ""} {set MOUSE_PHENO_EVIDENCE "NA"}
 	    set FISH_PHENO_EVIDENCE  [lsort -unique $FISH_PHENO_EVIDENCE]; if {$FISH_PHENO_EVIDENCE eq ""} {set FISH_PHENO_EVIDENCE "NA"}
 	    
-	    set g_Exomiser($geneName) "$EXOMISER_GENE_PHENO_SCORE\t[join $HUMAN_PHENO_EVIDENCE ";"]\t[join $MOUSE_PHENO_EVIDENCE ";"]\t[join $FISH_PHENO_EVIDENCE ";"]"
+	    set g_Exomiser($sample,$geneName) "$EXOMISER_GENE_PHENO_SCORE\t[join $HUMAN_PHENO_EVIDENCE ";"]\t[join $MOUSE_PHENO_EVIDENCE ";"]\t[join $FISH_PHENO_EVIDENCE ";"]"
 
 	}
-	
-	# End the REST service
-        if {[catch {exec kill -9 $idService} Message]} {
-            puts "End the REST service:"
-            puts $Message
-        }
-
-	file delete -force $exomiserStartServiceFile
     }
     
     # Remove tmp files
@@ -360,21 +367,21 @@ proc runExomiser {L_Genes L_HPO} {
 # g_Exomiser($geneName) = EXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE
 # Return either only the score or all the annotation:
 # what = "score" or "all"
-proc ExomiserAnnotation {GeneName what} {
+proc ExomiserAnnotation {sample GeneName what} {
     
     global g_Exomiser
 
     if {$what eq "all"} {
 	# Return all the annotation (EXOMISER_GENE_PHENO_SCORE HUMAN_PHENO_EVIDENCE MOUSE_PHENO_EVIDENCE FISH_PHENO_EVIDENCE) => for gene annotations
-	if {[info exists g_Exomiser($GeneName)]} {
-	    return $g_Exomiser($GeneName)
+	if {[info exists g_Exomiser($sample,$GeneName)]} {
+	    return $g_Exomiser($sample,$GeneName)
 	} else {
 	    return "-1.0\tNA\tNA\tNA"
 	}
     } elseif {$what eq "score"} {
 	# Return only the score (EXOMISER_GENE_PHENO_SCORE) => for regulatory elements annotations
-	if {[info exists g_Exomiser($GeneName)]} {
-	    return [lindex [split $g_Exomiser($GeneName) "\t"] 0]
+	if {[info exists g_Exomiser($sample,$GeneName)]} {
+	    return [lindex [split $g_Exomiser($sample,$GeneName) "\t"] 0]
 	} else {
 	    return "-1.0"
 	}

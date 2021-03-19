@@ -162,6 +162,7 @@ proc scoreAllTheID {} {
 	set bestCDSlength 0
 	set allGene   {}
 	set bestGene ".."
+	set g_PPH2($ID) "NA"
 
 	if {[info exists g_VaRank(DEBUG)]} {puts "Variant: $ID"}
 
@@ -272,7 +273,6 @@ proc scoreAllTheID {} {
 	    }
 
 	    if {[info exists g_VaRank(DEBUG)]} {puts "Score $score"}
-
 
 
 	    
@@ -407,7 +407,7 @@ proc scoreAllTheID {} {
 			set g_PPH2($ID) $thePPH2
 		    }
 		}
-	    }
+	    } 
 
 	    # 2016/02/29
 	    #

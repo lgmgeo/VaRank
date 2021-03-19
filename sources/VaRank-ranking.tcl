@@ -351,10 +351,13 @@ proc writeAllVariantsRankingByVar {} {
     }
 
 
+    set n_lineslinesOfAllFilesTogether 0
+    
     ## Define the 3 headlines for each output ($RankingText($patient)):
     ###################################################################
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
+
 	  
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		    
 	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
@@ -408,7 +411,8 @@ proc writeAllVariantsRankingByVar {} {
     ## AlamutAnalysis = "yes"
     ## g_lScore is sorted in descending order of scores (with no more redundancy).
     ##############################################################################
-    puts "...organizing ranking output from annotated data ([llength $g_lScore] scores) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+    puts "...writing output files: all variants, ranking by var ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+    puts "\t...from annotated data ([llength $g_lScore] variants) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
     foreach duoIDscore $g_lScore {
 	set ID [lindex $duoIDscore 0]
@@ -434,7 +438,7 @@ proc writeAllVariantsRankingByVar {} {
 	    if {[set $iCol] eq -1} {
 		set $colName NA
 	    } else {
-		set $colName [lindex $L [set $iCol]] 
+		set $colName [lindex $L [set $iCol]]   ;# varankVarScore defined here
 	    }	    
 	    #DEBUG
 	    #puts "iCol $iCol - [set $iCol] - [set $colName]"
@@ -527,7 +531,6 @@ proc writeAllVariantsRankingByVar {} {
 	
 	set annotationAnalysis "yes"
 	set barcode "'$barcode'"
-	set vaRankVarScore  [lindex $duoIDscore 1]
 
 
 	# Searching for annotation specific of each patient
@@ -596,7 +599,7 @@ proc writeAllVariantsRankingByVar {} {
 		foreach colName $g_VaRank(L_outputColHeader) {
 		    lappend L_rankText [set $colName]
 		}
-		append RankingText($patient) [join $L_rankText "\t"]
+		append RankingText($patient) [join $L_rankText "\t"] ;# add varankVarScore here
 
 		# Append values for optional columns (the ones from the VCF files):
 		###################################################################
@@ -654,11 +657,26 @@ proc writeAllVariantsRankingByVar {} {
 		############################
 		## Adding exomiser annotations only on the first gene
 		set g [lindex [split $gene "/"] 0] 
-		append RankingText($patient) "\t[ExomiserAnnotation "$g" "all"]"
+		append RankingText($patient) "\t[ExomiserAnnotation "$patient" "$g" "all"]" 
 		
 		# End of annotation line
 		########################
 		append RankingText($patient) "\n"
+
+		# Intermediate writing to save RAM
+		##################################
+		incr n_linesOfAllFilesTogether
+		if {$n_linesOfAllFilesTogether > 500000} {
+		    set n_linesOfAllFilesTogether 0
+		    foreach famHere [array names g_lPatientsOf] {
+			foreach patientHere $g_lPatientsOf($famHere) {			    
+			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
+			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
+			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
+			    set RankingText($patientHere) ""
+			}
+		    }
+		}
 	    }
 	}	
     }
@@ -666,7 +684,14 @@ proc writeAllVariantsRankingByVar {} {
     ## Downloading genetic variants not analysed by alamut.
     ## AlamutAnalysis = "no"
     #######################################################
-    puts "...organizing ranking output from data not annotated ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+    set n_notannotated 0
+    foreach ID [set g_vcfINFOS(L_IDs)] {
+	if {[info exists g_ANNOTATION($ID)]} {continue}
+	# Variation is computed but no patient has it... (GT=0/0 for all patients)
+	if {![info exists g_vcfINFOS($ID)]} {continue}
+	incr n_notannotated
+    }
+    puts "\t...from data not annotated ($n_notannotated variants) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
     # Needed if there are only variants not analysed by Alamut
     set i_gene [lsearch -exact [split $g_ANNOTATION(#id) "\t"] "gene"]
@@ -678,7 +703,6 @@ proc writeAllVariantsRankingByVar {} {
 	if {![info exists g_vcfINFOS($ID)]} {continue}
 
 	set variantID $ID
-	set varankVarScore ""
 	set chr   [lindex $g_vcfINFOS($ID) 0]
 	set start [lindex $g_vcfINFOS($ID) 1]
 	set ref   [lindex $g_vcfINFOS($ID) 2]
@@ -696,9 +720,10 @@ proc writeAllVariantsRankingByVar {} {
 	    if {[regexp "AF$|Freq|Count|gnomadReadDepth" $colName]} {
 		set $colName "-1"
 	    } else {
-		set $colName "NA"
+		set $colName "NA"; # varankVarScore defined here with "NA". Need to be set to "0" below.
 	    }	    
 	}
+	set varankVarScore 0
 
 	## Attribution of a gene name for upstream deletion (from VCF 4.2, ALT='*')
 	if {[regexp "_\\*$" $ID]} {
@@ -756,7 +781,6 @@ proc writeAllVariantsRankingByVar {} {
 
 	set annotationAnalysis "no"
 	set barcode "'$barcode'"
-	set vaRankVarScore  0
 
 
 	# Searching for annotation specific of each patient
@@ -875,7 +899,23 @@ proc writeAllVariantsRankingByVar {} {
 		
 		    # End of annotation line
 		    ########################
-		    append RankingText($patient) "\n"			
+		    append RankingText($patient) "\n"
+		    
+		    # Intermediate writing to save RAM
+		    ##################################
+		    incr n_linesOfAllFilesTogether
+		    if {$n_linesOfAllFilesTogether > 500000} {
+			set n_linesOfAllFilesTogether 0
+			foreach famHere [array names g_lPatientsOf] {
+			    foreach patientHere $g_lPatientsOf($famHere) {			    
+				if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
+				set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
+				WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
+				set RankingText($patientHere) ""
+			    }
+			}
+		    }
+
 		}
 	    }
 	}
@@ -883,7 +923,6 @@ proc writeAllVariantsRankingByVar {} {
     
     ## Writing "*_allVariants.rankingByVar" output files
     ####################################################
-    puts "...writing output files: all variants, ranking by var ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
 

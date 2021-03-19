@@ -51,6 +51,7 @@ proc configureVaRank {argv} {
     global g_VaRank
     global g_lPatientsOf
     global env
+    global L_hpo
 
 
     puts "...downloading the configuration data ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
@@ -89,7 +90,6 @@ proc configureVaRank {argv} {
     set g_VaRank(freqFilter)  0.01
     set g_VaRank(Homstatus)   "no"
     set g_VaRank(Homcutoff)     80
-    set g_VaRank(hpo)           "";# "HP:0030684,HP:0085622"
     set g_VaRank(javaPath)  "java"
 
     set g_VaRank(MEScutoff)          -15
@@ -144,7 +144,7 @@ proc configureVaRank {argv} {
     
     ## Load config file options and output column names
     ###################################################
-    set lOptionsOk "AlamutAlltrans alamutHumanDB AlamutProcesses B_phastCons B_PPH2 B_SIFT dbNSFP dbSNP depthFilter extann freqFilter Homcutoff Homstatus hpo javaPath MEScutoff metrics msigdb NNScutoff phastConsCutoff phastConsDB proxyPasswd proxyPort proxyServer proxyUser readFilter readPercentFilter refseq rsFilter rsFromVCF S_CloseSplice S_DeepSplice S_EssentialSplice S_ExonIntron S_Fs S_Inframe S_Known S_LSEstrong S_LSEweak S_Missense S_StartLoss S_StopGain S_StopLoss S_Synonymous  S_UTR SamOut SamVa snpeffHumanDB SnpEffTestsDir SSFcutoff uniprot vcfDir vcfFields vcfInfo"
+    set lOptionsOk "AlamutAlltrans alamutHumanDB AlamutProcesses B_phastCons B_PPH2 B_SIFT dbNSFP dbSNP depthFilter extann freqFilter Homcutoff Homstatus javaPath MEScutoff metrics msigdb NNScutoff phastConsCutoff phastConsDB proxyPasswd proxyPort proxyServer proxyUser readFilter readPercentFilter refseq rsFilter rsFromVCF S_CloseSplice S_DeepSplice S_EssentialSplice S_ExonIntron S_Fs S_Inframe S_Known S_LSEstrong S_LSEweak S_Missense S_StartLoss S_StopGain S_StopLoss S_Synonymous  S_UTR SamOut SamVa snpeffHumanDB SnpEffTestsDir SSFcutoff uniprot vcfDir vcfFields vcfInfo"
     set L_outputColHeaderBis ""
     set configFile "$g_VaRank(vcfDir)/configfile"
     if {[file exists $configFile]} {
@@ -158,6 +158,15 @@ proc configureVaRank {argv} {
 		foreach val [split [string trim $lpat] " "] {
 		    lappend g_lPatientsOf($family) $val
 		}
+		continue
+	    }
+	    # extracting the phenotype (HPO)
+	    if {[regexp "^sample = +(\[^ \t\]+)" $L match sample]} {
+		continue
+	    }
+	    if {[regexp "^HP:" $L]} {
+		regsub -all " |;" $L "," L
+		set L_hpo($sample) $L
 		continue
 	    }
 	    # extracting the options
@@ -318,26 +327,6 @@ proc configureVaRank {argv} {
 	puts "############################################################################"
 	exit
     }
-    
-    # It must be a comma, semicolon or space separated class values, default = ""
-    # (e.g.: "HP:0001156,HP:0001363,HP:0011304")
-    set g_VaRank(hpo) [split $g_VaRank(hpo) ",|;| "]
-    set L_correctHPO {}
-    set L_display ""
-    foreach hpo $g_VaRank(hpo) {
-        if {[regexp "^HP:\[0-9\]+$" $hpo]} {
-            lappend L_correctHPO $hpo
-        } else {
-            lappend L_display "Bad format for the HPO term: $hpo. Not used."
-        }
-    }
-    if {$L_display ne ""} {
-        puts "############################################################################"
-        puts "[join $L_display "\n"]"
-        puts "############################################################################"
-    }
-    set g_VaRank(hpo) [join $L_correctHPO ","]
-
 
     if {[info exists g_VaRank(snpeffDir)]} {
 
