@@ -124,6 +124,8 @@ proc configureVaRank {argv} {
     set g_VaRank(S_Synonymous)      10
     set g_VaRank(S_UTR)              1
 
+    set g_VaRank(skipAlamutChecks) "no"
+
     set g_VaRank(snpeffHumanDB)     "" 
     set g_VaRank(SnpEffTestsDir) "SnpEffTests"
     set g_VaRank(SSFcutoff)         -5
@@ -144,7 +146,7 @@ proc configureVaRank {argv} {
     
     ## Load config file options and output column names
     ###################################################
-    set lOptionsOk "AlamutAlltrans alamutHumanDB AlamutProcesses B_phastCons B_PPH2 B_SIFT dbNSFP dbSNP depthFilter extann freqFilter Homcutoff Homstatus javaPath MEScutoff metrics msigdb NNScutoff phastConsCutoff phastConsDB proxyPasswd proxyPort proxyServer proxyUser readFilter readPercentFilter refseq rsFilter rsFromVCF S_CloseSplice S_DeepSplice S_EssentialSplice S_ExonIntron S_Fs S_Inframe S_Known S_LSEstrong S_LSEweak S_Missense S_StartLoss S_StopGain S_StopLoss S_Synonymous  S_UTR SamOut SamVa snpeffHumanDB SnpEffTestsDir SSFcutoff uniprot vcfDir vcfFields vcfInfo"
+    set lOptionsOk "AlamutAlltrans alamutHumanDB AlamutProcesses B_phastCons B_PPH2 B_SIFT dbNSFP dbSNP depthFilter extann freqFilter Homcutoff Homstatus javaPath MEScutoff metrics msigdb NNScutoff phastConsCutoff phastConsDB proxyPasswd proxyPort proxyServer proxyUser readFilter readPercentFilter refseq rsFilter rsFromVCF S_CloseSplice S_DeepSplice S_EssentialSplice S_ExonIntron S_Fs S_Inframe S_Known S_LSEstrong S_LSEweak S_Missense S_StartLoss S_StopGain S_StopLoss S_Synonymous  S_UTR skipAlamutChecks SamOut SamVa snpeffHumanDB SnpEffTestsDir SSFcutoff uniprot vcfDir vcfFields vcfInfo"
     set L_outputColHeaderBis ""
     set configFile "$g_VaRank(vcfDir)/configfile"
     if {[file exists $configFile]} {
