@@ -91,11 +91,14 @@ OPTIONS
 -SamOut			A “Sample list”. To write output files only for selected samples.
 			Ex: “sample1 sample2”. 
 
-- AlamutProcesses	#processes (Alamut batch Standalone version only). Alamut Annotation jobs are split among multiple processes on the same computer.
+-AlamutProcesses	#processes (Alamut batch Standalone version only). Alamut Annotation jobs are split among multiple processes on the same computer.
 			Range values: Integer (default=0, no multi-process)
 
-- AlamutAlltrans 	Annotate variants on all transcripts with Alamut (rather than on the longest transcript).
+-AlamutAlltrans 	Annotate variants on all transcripts with Alamut (rather than on the longest transcript).
 			Range values: yes (default) or no
+
+-skipAlamutChecks	To skip the Alamut check step
+			Range values: no (default) or yes
 
 
 The following options are provided to adapt the scoring scheme to the users:
