@@ -684,6 +684,7 @@ proc writeAllVariantsRankingByVar {} {
     ## Downloading genetic variants not analysed by alamut.
     ## AlamutAnalysis = "no"
     #######################################################
+    
     set n_notannotated 0
     foreach ID [set g_vcfINFOS(L_IDs)] {
 	if {[info exists g_ANNOTATION($ID)]} {continue}
@@ -713,18 +714,21 @@ proc writeAllVariantsRankingByVar {} {
 	#puts "chrstartrefalt:$ID - $chr - $start - $ref - $alt"
 	
 	# Attributing the "NA" or "-1" value for each annotation category 
-	set deltaMaxEntScorePercent "NA"
-	set deltaSSFscorePercent "NA"
-	set deltaNNSscorePercent "NA"
-	foreach colName $L_colNamesFromAnnotation {
-	    if {[regexp "AF$|Freq|Count|gnomadReadDepth" $colName]} {
-		set $colName "-1"
-	    } else {
-		set $colName "NA"; # varankVarScore defined here with "NA". Need to be set to "0" below.
-	    }	    
+	if {![info exists attribution1]} {  ;# Values are either empty or equal to "NA"/"-1". No need to redo this values attribution several times.
+	    set attribution1 "done"
+	    set deltaMaxEntScorePercent "NA"
+	    set deltaSSFscorePercent "NA"
+	    set deltaNNSscorePercent "NA"
+	    foreach colName $L_colNamesFromAnnotation {
+		if {[regexp "AF$|Freq|Count|gnomadReadDepth" $colName]} {
+		    set $colName "-1"
+		} else {
+		    set $colName "NA"; # varankVarScore defined here with "NA". Need to be set to "0" below.
+		}	    
+	    }
+	    set varankVarScore 0
 	}
-	set varankVarScore 0
-
+	
 	## Attribution of a gene name for upstream deletion (from VCF 4.2, ALT='*')
 	if {[regexp "_\\*$" $ID]} {
 	    set gene     [geneForStarID $ID $i_gene]
@@ -785,6 +789,7 @@ proc writeAllVariantsRankingByVar {} {
 
 	# Searching for annotation specific of each patient
 	# Then append all annotations (non specific + specific) to the "RankingText(patient)" variable
+	catch {unset attributionForThisID}
 	foreach fam [array names g_lPatientsOf] {
 	    foreach patient $g_lPatientsOf($fam) {
 		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		
@@ -822,100 +827,92 @@ proc writeAllVariantsRankingByVar {} {
 		}
 		
 		# append values for compulsory columns (the ones from the configfile)
-		set L_rankText {} 
+		set L_rankText {}
 		foreach colName $g_VaRank(L_outputColHeader) {
 		    lappend L_rankText [set $colName]
 		}
 		append RankingText($patient) [join $L_rankText "\t"]
-
+		#puts "!! [join $L_rankText "\t"]"		
+	
 		# Append values for optional columns (the ones from the VCF files):
 		###################################################################
-		# -> from the INFO column of the VCF:
-		set l_Infos_VCF  {}
-		set l_headers_ID {}
-		set l_data_ID    {}		
-		set rajoutVCFinfos {}		
-		if {[set g_VaRank(vcfInfo)] eq "yes"} {
-		    set l_Infos_VCF ""
-		    if {[info exists g_vcfINFOS_Supp($ID,$patient)]} {set l_Infos_VCF [set g_vcfINFOS_Supp($ID,$patient)]}		    
-		    foreach infos_VCF $l_Infos_VCF {
-			set l_Header_Infos_VCF ""
-			set Header ""
-			set Data   ""			
-			if {[regexp "=" $infos_VCF]} {
-			    set l_Header_Infos_VCF [split $infos_VCF "="]			    
-			    set Header [lindex $l_Header_Infos_VCF 0]
-			    set Data   [lindex $l_Header_Infos_VCF 1]
-			} else {
-			    set l_Header_Infos_VCF $infos_VCF			    
-			    set Header $l_Header_Infos_VCF
-			    set Data   $l_Header_Infos_VCF
-			}			
-			lappend l_headers_ID $Header
-			lappend l_data_ID    $Data
-		    }		    
-		    foreach NewHeaders_VCF [set g_vcfINFOS_Supp(Header)] {
-			set  i_header [lsearch -exact  $l_headers_ID $NewHeaders_VCF]
-			if {$i_header eq -1} {lappend rajoutVCFinfos "NA"} else {lappend rajoutVCFinfos [lindex $l_data_ID $i_header]}
-		    }
-		    set rajoutVCFinfos [join $rajoutVCFinfos "\t"]
-		    if {$rajoutVCFinfos ne {}} {
-			append RankingText($patient) "\t$rajoutVCFinfos"
-		    } 
-		}
+		if {![info exists attributionForThisID]} {
+		    set attributionForThisID "done"
+		    
+		    set rajoutVCFinfos {}		
 
-		## Adding external user annotations at the end of the output files
-		###################################################################
-		if {[info exists g_VaRank(extann)] && $g_VaRank(extann) ne ""} {
-		    if {$gene eq "NA"} {		    
-			# Adding external user annotations at the end of each output files line
-		        append RankingText($patient) "\t"
+		    # -> from the INFO column of the VCF:
+		    set l_Infos_VCF  {}
+		    set l_headers_ID {}
+		    set l_data_ID    {}		
+		    if {[set g_VaRank(vcfInfo)] eq "yes"} {
+			set l_Infos_VCF ""
+			if {[info exists g_vcfINFOS_Supp($ID,$patient)]} {set l_Infos_VCF [set g_vcfINFOS_Supp($ID,$patient)]}		    
+			foreach infos_VCF $l_Infos_VCF {
+			    set l_Header_Infos_VCF ""
+			    set Header ""
+			    set Data   ""			
+			    if {[regexp "=" $infos_VCF]} {
+				set l_Header_Infos_VCF [split $infos_VCF "="]			    
+				set Header [lindex $l_Header_Infos_VCF 0]
+				set Data   [lindex $l_Header_Infos_VCF 1]
+			    } else {
+				set l_Header_Infos_VCF $infos_VCF			    
+				set Header $l_Header_Infos_VCF
+				set Data   $l_Header_Infos_VCF
+			    }			
+			    lappend l_headers_ID $Header
+			    lappend l_data_ID    $Data
+			}		    
+			foreach NewHeaders_VCF [set g_vcfINFOS_Supp(Header)] {
+			    set  i_header [lsearch -exact  $l_headers_ID $NewHeaders_VCF]
+			    if {$i_header eq -1} {lappend rajoutVCFinfos "NA"} else {lappend rajoutVCFinfos [lindex $l_data_ID $i_header]}
+			}
+			set rajoutVCFinfos [join $rajoutVCFinfos "\t"]
+		    }
+		}
+		if {$rajoutVCFinfos ne {}} {
+		    append RankingText($patient) "\t$rajoutVCFinfos"
+		} 
+		    
+		
+		## Adding external user annotations at the end of the output files lines
+		########################################################################
+		if {![info exists attribution2]} {  ;# Values are always the same. No need to redo this values attribution several times.
+		    set attribution2 "done"
+		    
+		    set ExtAnnPat ""
+		    if {[info exists g_VaRank(extann)] && $g_VaRank(extann) ne ""} {
+			# We have: $gene eq "NA"		    
+			append ExtAnnPat "\t"
 			foreach F [ExternalAnnotations L_Files] {
 			    #puts $F 
 			    set NbHeader [llength [split [ExternalAnnotations $F Header] "\t"]]
-			    append RankingText($patient) "\t[join [lrepeat $NbHeader ""] "\t"]"
+			    append ExtAnnPat "\t[join [lrepeat $NbHeader ""] "\t"]"
 			    #puts "Header >[ExternalAnnotations $F Header]< ---> $NbHeader"
 			    #puts "\t[join [lrepeat $NbHeader NA] "\t"]"
-			}
-		    } else {
-			## Adding external annotation for variant ALT='*' when $gene ne "NA"
-			#######################################################################
-			## Adding external annotations only on the first gene (decided the 19/07/2018 with Jean)		    
-			set g [lindex [split $gene "/"] 0] 
-			append RankingText($patient) "\t$g"
-			foreach F [ExternalAnnotations L_Files] {
-			    if {[ExternalAnnotations $F $g] ne ""} {
-				append RankingText($patient) "\t[ExternalAnnotations $F $g]"
-			    } else {			    
-				set NbHeader [llength [split [ExternalAnnotations $F Header] "\t"]]
-				append RankingText($patient) "\t[join [lrepeat $NbHeader ""] "\t"]"
-			    }
-			}
+			}		    
+			
+			# Adding exomiser annotation
+			############################
+			append ExtAnnPat "\t-1.0\tNA\tNA\tNA"
 		    }
-
-		    # Adding exomiser annotation
-		    ############################
-		    append RankingText($patient) "\t-1.0\t\t\t"
+		}
+		append RankingText($patient) "$ExtAnnPat\n"
 		
-		    # End of annotation line
-		    ########################
-		    append RankingText($patient) "\n"
-		    
-		    # Intermediate writing to save RAM
-		    ##################################
-		    incr n_linesOfAllFilesTogether
-		    if {$n_linesOfAllFilesTogether > 500000} {
-			set n_linesOfAllFilesTogether 0
-			foreach famHere [array names g_lPatientsOf] {
-			    foreach patientHere $g_lPatientsOf($famHere) {			    
-				if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
-				set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
-				WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
-				set RankingText($patientHere) ""
-			    }
+		# Intermediate writing to save RAM
+		##################################
+		incr n_linesOfAllFilesTogether
+		if {$n_linesOfAllFilesTogether > 500000} {
+		    set n_linesOfAllFilesTogether 0
+		    foreach famHere [array names g_lPatientsOf] {
+			foreach patientHere $g_lPatientsOf($famHere) {			    
+			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
+			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
+			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
+			    set RankingText($patientHere) ""
 			}
 		    }
-
 		}
 	    }
 	}

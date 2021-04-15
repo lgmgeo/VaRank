@@ -74,7 +74,7 @@ proc checkAlamut {} {
     
     # If Alamut annotation is already done for all variants, no need to check Alamut
     if {$g_VaRank(skipAlamutChecks) eq "yes"} {
-	puts "\...skip (no need)"
+	puts "\t\t...skip (no need)"
 	if {![info exists g_donnsplice]} {set g_donnsplice ""}
 	return
     }
