@@ -80,6 +80,7 @@ source $g_VaRank(sourcesDir)/VaRank-upstreamDeletion.tcl
 
 puts "VaRank [VaRank_Version]"
 puts "VaRank is a program for Ranking genetic Variation from NGS data"
+puts "[exec hostname]"
 puts ""
 puts "Copyright (C) 2016-2021 GEOFFROY Veronique and MULLER Jean"
 puts ""
