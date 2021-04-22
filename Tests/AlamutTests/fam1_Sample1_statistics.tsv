@@ -1,10 +1,10 @@
 What        	Total	Homozygous	Heterozygous	Null
 3'UTR       	0	0	0	0
-5'UTR       	1	0	1	0
+5'UTR       	0	0	0	0
 downstream  	0	0	0	0
 frameshift  	0	0	0	0
 in-frame    	0	0	0	0
-intron      	1	0	1	0
+intron      	0	0	0	0
 missense    	1	1	0	0
 splice site 	0	0	0	0
 start loss  	0	0	0	0
@@ -12,6 +12,6 @@ stop gain   	0	0	0	0
 stop loss   	0	0	0	0
 synonymous  	0	0	0	0
 upstream    	0	0	0	0
-unknown     	2	1	1	0
+unknown     	5	0	5	0
 
 Total:  6 variations.

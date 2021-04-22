@@ -2,11 +2,11 @@ Global statistics (non redundant) on 1 samples:
 
 What        	Total	Mean	SD
 3'UTR       	0	NA	NA
-5'UTR       	1	1	0
+5'UTR       	0	NA	NA
 downstream  	0	NA	NA
 frameshift  	0	NA	NA
 in-frame    	0	NA	NA
-intron      	1	1	0
+intron      	0	NA	NA
 missense    	1	1	0
 splice site 	0	NA	NA
 start loss  	0	NA	NA
@@ -14,6 +14,6 @@ stop gain   	0	NA	NA
 stop loss   	0	NA	NA
 synonymous  	0	NA	NA
 upstream    	0	NA	NA
-unknown     	2	2	0
+unknown     	5	5	0
 
 Total       	6	NA

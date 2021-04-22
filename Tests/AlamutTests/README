@@ -1,0 +1,21 @@
+## Tests with Alamut:
+#####################
+# WARNING: Remove the Alamut directory when -alamutHumanDB is modified!
+
+cd $VARANK/Tests/AlamutTests/
+
+# Command line without phenotype-driven analysis:
+rm -r Alamut
+$VARANK/bin/VaRank -vcfDir "." -vcfInfo "yes"
+rm -r Alamut
+$VARANK/bin/VaRank -vcfDir "." -alamutHumanDB "GRCh38"
+
+
+# Command line with phenotype-driven analysis:
+rm -r Alamut
+mv configfile.sauv configfile
+$VARANK/bin/VaRank -vcfDir "." -SamOut "Sample1 Sample2"
+mv configfile configfile.sauv
+
+
+

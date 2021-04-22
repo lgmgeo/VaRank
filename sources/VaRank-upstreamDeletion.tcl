@@ -50,7 +50,7 @@ proc geneForStarID {starID i_gene} {
     if {[info exists g_ANNOTATION($consensusID)]} {
 	set gene [lindex $g_ANNOTATION($consensusID) $i_gene]
     }
-    
+
     return "$gene"
 }
 

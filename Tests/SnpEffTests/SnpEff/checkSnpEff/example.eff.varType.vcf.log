@@ -1,0 +1,4 @@
+SnpEff started: April 20 2021 - 11:36
+
+java -Xmx4g -jar /biolo/NGS/SnpEff/SnpEff-latest/SnpSift.jar varType /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.eff.vcf > /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.eff.varType.vcf
+

@@ -1,0 +1,380 @@
+SnpEff started: April 20 2021 - 11:35
+
+java -Xmx4g -jar /biolo/NGS/SnpEff/SnpEff-latest/snpEff.jar eff -c /biolo/NGS/SnpEff/SnpEff-latest/snpEff.config -v GRCh37.75 /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.vcf > /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.eff.vcf
+
+00:00:00	SnpEff version SnpEff 4.3t (build 2017-11-24 10:18), by Pablo Cingolani
+00:00:00	Command: 'eff'
+00:00:00	Reading configuration file '/biolo/NGS/SnpEff/SnpEff-latest/snpEff.config'. Genome: 'GRCh37.75'
+00:00:00	Reading config file: /enadisk/gstock/NGS/SnpEff/20210129_snpEff/snpEff.config
+00:00:00	done
+00:00:00	Reading database for genome version 'GRCh37.75' from file '/enadisk/gstock/NGS/SnpEff/20210129_snpEff/./data/GRCh37.75/snpEffectPredictor.bin' (this might take a while)
+00:00:22	done
+00:00:22	Reading NextProt database from file '/enadisk/gstock/NGS/SnpEff/20210129_snpEff/./data/GRCh37.75/nextProt.bin'
+00:00:23	NextProt database: 638161 markers loaded.
+00:00:23	Adding transcript info to NextProt markers.
+00:00:23	NextProt database: 638161 markers added.
+00:00:23	Loading PWMs from : /enadisk/gstock/NGS/SnpEff/20210129_snpEff/./data/GRCh37.75/pwms.bin
+00:00:23	Loading Motifs from file '/enadisk/gstock/NGS/SnpEff/20210129_snpEff/./data/GRCh37.75/motif.bin'
+00:00:24		Motif database: 284122 markers loaded.
+00:00:24	Loading interactions from : /enadisk/gstock/NGS/SnpEff/20210129_snpEff/./data/GRCh37.75/interactions.bin
+00:00:34		Interactions: 1805198 added, 0 skipped.
+00:00:34	Building interval forest
+00:00:44	done.
+00:00:44	Genome stats :
+#-----------------------------------------------
+# Genome name                : 'Homo_sapiens'
+# Genome version             : 'GRCh37.75'
+# Genome ID                  : 'GRCh37.75[0]'
+# Has protein coding info    : true
+# Has Tr. Support Level info : true
+# Genes                      : 63677
+# Protein coding genes       : 23393
+#-----------------------------------------------
+# Transcripts                : 215170
+# Avg. transcripts per gene  : 3.38
+# TSL transcripts            : 0
+#-----------------------------------------------
+# Checked transcripts        : 
+#               AA sequences : 104175 ( 99.44% )
+#              DNA sequences : 179360 ( 83.36% )
+#-----------------------------------------------
+# Protein coding transcripts : 104763
+#              Length errors :  14463 ( 13.81% )
+#  STOP codons in CDS errors :     77 ( 0.07% )
+#         START codon errors :  12147 ( 11.59% )
+#        STOP codon warnings :   8208 ( 7.83% )
+#              UTR sequences : 101620 ( 47.23% )
+#               Total Errors :  24855 ( 23.72% )
+#-----------------------------------------------
+# Cds                        : 792087
+# Exons                      : 1306656
+# Exons with sequence        : 1306656
+# Exons without sequence     : 0
+# Avg. exons per transcript  : 6.07
+# WARNING!                   : Mitochondrion chromosome 'MT' does not have a mitochondrion codon table (codon table = 'Standard'). You should update the config file.
+#-----------------------------------------------
+# Number of chromosomes      : 297
+# Chromosomes                : Format 'chromo_name size codon_table'
+#		'HG1292_PATCH'	250051446	Standard
+#		'HG1287_PATCH'	249964560	Standard
+#		'HG1473_PATCH'	249272860	Standard
+#		'HG1471_PATCH'	249269426	Standard
+#		'HSCHR1_1_CTG31'	249267852	Standard
+#		'HSCHR1_2_CTG31'	249266025	Standard
+#		'HSCHR1_3_CTG31'	249262108	Standard
+#		'HG999_2_PATCH'	249259300	Standard
+#		'HG989_PATCH'	249257867	Standard
+#		'HG999_1_PATCH'	249257505	Standard
+#		'HG1472_PATCH'	249251918	Standard
+#		'1'	249250621	Standard
+#		'HG1293_PATCH'	249140837	Standard
+#		'HG686_PATCH'	243297375	Standard
+#		'HSCHR2_1_CTG12'	243216362	Standard
+#		'HSCHR2_2_CTG12'	243205453	Standard
+#		'HSCHR2_1_CTG1'	243205406	Standard
+#		'HG953_PATCH'	243199374	Standard
+#		'2'	243199373	Standard
+#		'HG1007_PATCH'	243135680	Standard
+#		'HG280_PATCH'	198070731	Standard
+#		'HG991_PATCH'	198049698	Standard
+#		'HSCHR3_1_CTG2_1'	198032968	Standard
+#		'HG186_PATCH'	198025845	Standard
+#		'HSCHR3_1_CTG1'	198024351	Standard
+#		'HG1091_PATCH'	198022491	Standard
+#		'HG325_PATCH'	198022431	Standard
+#		'3'	198022430	Standard
+#		'HG957_PATCH'	198022419	Standard
+#		'HG1032_PATCH'	191235710	Standard
+#		'HSCHR4_2_CTG9'	191176053	Standard
+#		'HSCHR4_1_CTG12'	191166925	Standard
+#		'HSCHR4_1_CTG6'	191164559	Standard
+#		'HG174_HG254_PATCH'	191160487	Standard
+#		'4'	191154276	Standard
+#		'HG706_PATCH'	191094783	Standard
+#		'HSCHR4_1'	191036603	Standard
+#		'HSCHR5_2_CTG1'	180935403	Standard
+#		'HSCHR5_1_CTG2'	180931866	Standard
+#		'HSCHR5_3_CTG1'	180924140	Standard
+#		'HSCHR5_1_CTG5'	180920737	Standard
+#		'HG1082_HG167_PATCH'	180915278	Standard
+#		'HG1063_PATCH'	180915263	Standard
+#		'5'	180915260	Standard
+#		'HSCHR5_1_CTG1'	180130563	Standard
+#		'HSCHR6_MHC_MCF'	171285426	Standard
+#		'HSCHR6_MHC_MANN'	171268956	Standard
+#		'HSCHR6_MHC_SSTO'	171254422	Standard
+#		'HG357_PATCH'	171241738	Standard
+#		'HG27_PATCH'	171147516	Standard
+#		'HSCHR6_2_CTG5'	171145319	Standard
+#		'HSCHR6_1_CTG5'	171142899	Standard
+#		'6'	171115067	Standard
+#		'HG1304_PATCH'	171115067	Standard
+#		'HG1322_PATCH'	171106913	Standard
+#		'HSCHR6_MHC_APD'	171098467	Standard
+#		'HSCHR6_MHC_DBB'	171092990	Standard
+#		'HSCHR6_MHC_QBL'	171043904	Standard
+#		'HSCHR6_MHC_COX'	171036692	Standard
+#		'HG193_PATCH'	171015169	Standard
+#		'HG7_PATCH'	159202172	Standard
+#		'HG946_PATCH'	159170352	Standard
+#		'HG14_PATCH'	159146664	Standard
+#		'HSCHR7_1_CTG6'	159144671	Standard
+#		'HG115_PATCH'	159141496	Standard
+#		'7'	159138663	Standard
+#		'HG736_PATCH'	159138649	Standard
+#		'HG444_PATCH'	159138589	Standard
+#		'HG1308_PATCH'	159117558	Standard
+#		'HG1257_PATCH'	158974302	Standard
+#		'HG1436_HG1432_PATCH'	155334750	Standard
+#		'HG1443_HG1444_PATCH'	155322430	Standard
+#		'HG1441_PATCH'	155280808	Standard
+#		'HG1425_PATCH'	155278471	Standard
+#		'HG1434_PATCH'	155277317	Standard
+#		'HG1458_PATCH'	155276628	Standard
+#		'HG1426_PATCH'	155276017	Standard
+#		'HG1423_PATCH'	155273746	Standard
+#		'HG1462_PATCH'	155272710	Standard
+#		'HG1424_PATCH'	155271369	Standard
+#		'HG1442_PATCH'	155270668	Standard
+#		'HG1440_PATCH'	155270604	Standard
+#		'HG29_PATCH'	155270596	Standard
+#		'HG1439_PATCH'	155270575	Standard
+#		'HG1438_PATCH'	155270574	Standard
+#		'HG1490_PATCH'	155270560	Standard
+#		'X'	155270560	Standard
+#		'HG375_PATCH'	155270558	Standard
+#		'HG1435_PATCH'	155270370	Standard
+#		'HG1437_PATCH'	155270150	Standard
+#		'HG1453_PATCH'	155264939	Standard
+#		'HG1463_PATCH'	155256818	Standard
+#		'HG1497_PATCH'	155209367	Standard
+#		'HG1459_PATCH'	155183809	Standard
+#		'HG480_HG481_PATCH'	155131142	Standard
+#		'HG1433_PATCH'	154987127	Standard
+#		'HG19_PATCH'	146439382	Standard
+#		'HG104_HG975_PATCH'	146391291	Standard
+#		'HG1699_PATCH'	146364052	Standard
+#		'8'	146364022	Standard
+#		'HG418_PATCH'	146363965	Standard
+#		'HG243_PATCH'	146193542	Standard
+#		'HG998_1_PATCH'	141245758	Standard
+#		'HG1502_PATCH'	141244527	Standard
+#		'HSCHR9_1_CTG1'	141228243	Standard
+#		'HG998_2_PATCH'	141226881	Standard
+#		'HG1501_PATCH'	141226402	Standard
+#		'HSCHR9_3_CTG35'	141224529	Standard
+#		'HG79_PATCH'	141223844	Standard
+#		'HSCHR9_1_CTG35'	141221627	Standard
+#		'HG1500_PATCH'	141220264	Standard
+#		'HSCHR9_2_CTG35'	141219511	Standard
+#		'9'	141213431	Standard
+#		'HG962_PATCH'	141213431	Standard
+#		'HG50_PATCH'	141126899	Standard
+#		'HSCHR10_1_CTG2'	135582047	Standard
+#		'HG1479_PATCH'	135573846	Standard
+#		'HSCHR10_1_CTG5'	135550810	Standard
+#		'HG995_PATCH'	135540039	Standard
+#		'HG905_PATCH'	135538807	Standard
+#		'HG979_PATCH'	135534996	Standard
+#		'HG871_PATCH'	135534976	Standard
+#		'HG311_PATCH'	135534748	Standard
+#		'HG339_PATCH'	135534748	Standard
+#		'10'	135534747	Standard
+#		'HG544_PATCH'	135287817	Standard
+#		'HG865_PATCH'	135091575	Standard
+#		'HG281_PATCH'	135068883	Standard
+#		'HG151_NOVEL_TEST'	135017590	Standard
+#		'HG142_HG150_NOVEL_TEST'	135014122	Standard
+#		'HSCHR11_1_CTG1_1'	135012249	Standard
+#		'HG122_PATCH'	135006522	Standard
+#		'HG348_PATCH'	135006518	Standard
+#		'HG256_PATCH'	135006517	Standard
+#		'HG305_PATCH'	135006517	Standard
+#		'11'	135006516	Standard
+#		'HG306_PATCH'	135006516	Standard
+#		'HG873_PATCH'	135006516	Standard
+#		'HG299_PATCH'	135006515	Standard
+#		'HG388_HG400_PATCH'	135006515	Standard
+#		'HG414_PATCH'	135006513	Standard
+#		'HG1074_PATCH'	134983033	Standard
+#		'HG536_PATCH'	134975178	Standard
+#		'HSCHR12_2_CTG2'	133883843	Standard
+#		'HSCHR12_1_CTG2_1'	133861054	Standard
+#		'HSCHR12_2_CTG2_1'	133858944	Standard
+#		'HSCHR12_3_CTG2_1'	133858072	Standard
+#		'HSCHR12_1_CTG2'	133857954	Standard
+#		'HSCHR12_1_CTG5'	133857937	Standard
+#		'HG996_PATCH'	133856340	Standard
+#		'HG344_PATCH'	133853754	Standard
+#		'12'	133851895	Standard
+#		'HG1595_PATCH'	133851793	Standard
+#		'HG1133_PATCH'	133848181	Standard
+#		'HSCHR12_1_CTG1'	133796744	Standard
+#		'HG858_PATCH'	133792729	Standard
+#		'HG1211_PATCH'	132375896	Standard
+#		'HG531_PATCH'	115179803	Standard
+#		'13'	115169878	Standard
+#		'HG1592_PATCH'	107407662	Standard
+#		'14'	107349540	Standard
+#		'HSCHR15_1_CTG8'	102543529	Standard
+#		'HSCHR15_1_CTG4'	102543012	Standard
+#		'HG971_PATCH'	102534416	Standard
+#		'15'	102531392	Standard
+#		'HSCHR16_1_CTG3_1'	90367188	Standard
+#		'HSCHR16_2_CTG3_1'	90359885	Standard
+#		'HG1208_PATCH'	90354761	Standard
+#		'16'	90354753	Standard
+#		'HG987_PATCH'	81523974	Standard
+#		'HG1591_PATCH'	81448030	Standard
+#		'HSCHR17_1'	81347270	Standard
+#		'HG417_PATCH'	81285417	Standard
+#		'HG183_PATCH'	81276452	Standard
+#		'HG748_PATCH'	81217493	Standard
+#		'HSCHR17_1_CTG1'	81213043	Standard
+#		'HSCHR17_3_CTG4'	81206832	Standard
+#		'HSCHR17_1_CTG4'	81202535	Standard
+#		'HG271_PATCH'	81201984	Standard
+#		'HSCHR17_2_CTG4'	81201263	Standard
+#		'HG185_PATCH'	81199444	Standard
+#		'HG990_PATCH'	81196563	Standard
+#		'HSCHR17_4_CTG4'	81195665	Standard
+#		'HG385_PATCH'	81195225	Standard
+#		'HG745_PATCH'	81195211	Standard
+#		'HG883_PATCH'	81195211	Standard
+#		'17'	81195210	Standard
+#		'HG747_PATCH'	81195185	Standard
+#		'HSCHR17_5_CTG4'	81184888	Standard
+#		'HSCHR17_6_CTG4'	81183840	Standard
+#		'HG75_PATCH'	81166739	Standard
+#		'HG1146_PATCH'	80683135	Standard
+#		'HSCHR18_2_CTG2'	78146697	Standard
+#		'HSCHR18_1_CTG2'	78090140	Standard
+#		'HSCHR18_1_CTG2_1'	78086634	Standard
+#		'HSCHR18_1_CTG1_1'	78084480	Standard
+#		'HSCHR18_2_CTG1_1'	78083330	Standard
+#		'HSCHR18_2_CTG2_1'	78082683	Standard
+#		'18'	78077248	Standard
+#		'HG944_PATCH'	63067000	Standard
+#		'HSCHR20_1_CTG1'	63031536	Standard
+#		'20'	63025520	Standard
+#		'HG144_PATCH'	62985039	Standard
+#		'HG506_HG507_HG1000_PATCH'	62969224	Standard
+#		'Y'	59373566	Standard
+#		'HSCHR19LRC_LRC_J_CTG1'	59154024	Standard
+#		'HSCHR19_2_CTG3'	59138462	Standard
+#		'HSCHR19_3_CTG3'	59137190	Standard
+#		'HSCHR19_1_CTG3_1'	59136156	Standard
+#		'HSCHR19_1_CTG3'	59135399	Standard
+#		'HG1350_HG959_PATCH'	59130736	Standard
+#		'19'	59128983	Standard
+#		'HSCHR19LRC_LRC_S_CTG1'	59128573	Standard
+#		'HSCHR19LRC_LRC_I_CTG1'	59126487	Standard
+#		'HG1079_PATCH'	59120870	Standard
+#		'HG729_PATCH'	59083191	Standard
+#		'HSCHR19LRC_LRC_T_CTG1'	59064866	Standard
+#		'HG730_PATCH'	59056986	Standard
+#		'HSCHR19LRC_COX1_CTG1'	59049900	Standard
+#		'HSCHR19LRC_PGF1_CTG1'	59049284	Standard
+#		'HSCHR19LRC_PGF2_CTG1'	58858662	Standard
+#		'HSCHR19LRC_COX2_CTG1'	58791703	Standard
+#		'HG1486_PATCH'	51430360	Standard
+#		'HG1488_PATCH'	51341116	Standard
+#		'HG1487_PATCH'	51337749	Standard
+#		'HSCHR22_2_CTG1'	51316694	Standard
+#		'HG497_PATCH'	51306896	Standard
+#		'22'	51304566	Standard
+#		'HG329_PATCH'	51304556	Standard
+#		'HSCHR22_1_CTG1'	51292468	Standard
+#		'HSCHR22_1_CTG2'	51274623	Standard
+#		'HSCHR21_1_CTG1_1'	48142481	Standard
+#		'HSCHR21_4_CTG1_1'	48139453	Standard
+#		'HSCHR21_2_CTG1_1'	48136597	Standard
+#		'HSCHR21_3_CTG1_1'	48135689	Standard
+#		'21'	48129895	Standard
+#		'HG237_PATCH'	48129861	Standard
+#		'GL000192.1'	547496	Standard
+#		'GL000225.1'	211173	Standard
+#		'GL000194.1'	191469	Standard
+#		'GL000193.1'	189789	Standard
+#		'GL000200.1'	187035	Standard
+#		'GL000222.1'	186861	Standard
+#		'GL000212.1'	186858	Standard
+#		'GL000195.1'	182896	Standard
+#		'GL000223.1'	180455	Standard
+#		'GL000224.1'	179693	Standard
+#		'GL000219.1'	179198	Standard
+#		'GL000205.1'	174588	Standard
+#		'GL000215.1'	172545	Standard
+#		'GL000216.1'	172294	Standard
+#		'GL000217.1'	172149	Standard
+#		'GL000199.1'	169874	Standard
+#		'GL000211.1'	166566	Standard
+#		'GL000213.1'	164239	Standard
+#		'GL000220.1'	161802	Standard
+#		'GL000218.1'	161147	Standard
+#		'GL000209.1'	159169	Standard
+#		'GL000221.1'	155397	Standard
+#		'GL000214.1'	137718	Standard
+#		'GL000228.1'	129120	Standard
+#		'GL000227.1'	128374	Standard
+#		'GL000191.1'	106433	Standard
+#		'GL000208.1'	92689	Standard
+#		'GL000198.1'	90085	Standard
+#		'GL000204.1'	81310	Standard
+#		'GL000233.1'	45941	Standard
+#		'GL000237.1'	45867	Standard
+#		'GL000230.1'	43691	Standard
+#		'GL000242.1'	43523	Standard
+#		'GL000243.1'	43341	Standard
+#		'GL000241.1'	42152	Standard
+#		'GL000236.1'	41934	Standard
+#		'GL000240.1'	41933	Standard
+#		'GL000206.1'	41001	Standard
+#		'GL000232.1'	40652	Standard
+#		'GL000234.1'	40531	Standard
+#		'GL000202.1'	40103	Standard
+#		'GL000238.1'	39939	Standard
+#		'GL000244.1'	39929	Standard
+#		'GL000248.1'	39786	Standard
+#		'GL000196.1'	38914	Standard
+#		'GL000249.1'	38502	Standard
+#		'GL000246.1'	38154	Standard
+#		'GL000203.1'	37498	Standard
+#		'GL000197.1'	37175	Standard
+#		'GL000245.1'	36651	Standard
+#		'GL000247.1'	36422	Standard
+#		'GL000201.1'	36148	Standard
+#		'GL000235.1'	34474	Standard
+#		'GL000239.1'	33824	Standard
+#		'GL000210.1'	27682	Standard
+#		'GL000231.1'	27386	Standard
+#		'GL000229.1'	19913	Standard
+#		'MT'	16569	Standard
+#		'GL000226.1'	15008	Standard
+#		'GL000207.1'	4262	Standard
+#-----------------------------------------------
+
+00:00:50	Predicting variants
+TsTvStats.sample(137):	WARNING: VCF entry has more genotype fields than expected (expected: 1, number of genotypes: 1).
+4	1795039	.	G	A	35.0	PASS	AC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG	GT:AD:GQ:DP	0/1:19,9:36:28	0/0:19,9:36:19
+GenotypeStats.sample(144):	WARNING: VCF entry has more genotype fields than expected (expected: 1, number of genotypes: 1).
+4	1795039	.	G	A	35.0	PASS	AC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG	GT:AD:GQ:DP	0/1:19,9:36:28	0/0:19,9:36:19
+TsTvStats.sample(137):	WARNING: VCF entry has more genotype fields than expected (expected: 1, number of genotypes: 1).
+19	13010643	.	G	T	33.0	PASS	AC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG	GT:AD:GQ:DP	0/1:19,9:36:28	0/1:17,11:28:23
+GenotypeStats.sample(144):	WARNING: VCF entry has more genotype fields than expected (expected: 1, number of genotypes: 1).
+19	13010643	.	G	T	33.0	PASS	AC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG	GT:AD:GQ:DP	0/1:19,9:36:28	0/1:17,11:28:23
+
+WARNINGS: Some warning were detected
+Warning type	Number of warnings
+WARNING_TRANSCRIPT_INCOMPLETE	2
+WARNING_TRANSCRIPT_NO_START_CODON	3
+
+
+00:00:50	Creating summary file: snpEff_summary.html
+00:00:51	Creating genes file: snpEff_genes.txt
+00:00:51	done.
+00:00:51	Logging
+00:00:52	Checking for updates...
+00:00:53	Done.
+SnpEff finished: April 20 2021 - 11:36
+

@@ -127,7 +127,7 @@ proc configureVaRank {argv} {
     set g_VaRank(skipAlamutChecks) "no"
 
     set g_VaRank(snpeffHumanDB)     "" 
-    set g_VaRank(SnpEffTestsDir) "SnpEffTests"
+    set g_VaRank(SnpEffTestsDir) "Tests/SnpEffTests/SnpEff/checkSnpEff"
     set g_VaRank(SSFcutoff)         -5
 
     set g_VaRank(SamOut)         "all"

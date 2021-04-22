@@ -194,7 +194,8 @@ proc scoreAllTheID {} {
 
 	    set transLength [lindex $L $i_transLength]   
 	    set CDSlength [lindex $L $i_CDSlength]   
-	    set gene   [lindex $L $i_gene]     
+	    set gene   [lindex $L $i_gene]
+
 	    if {![regexp -nocase "$gene" $allGene]} {lappend allGene $gene}
 	    
 	    set effect [lindex $L $i_effect]   
@@ -373,7 +374,6 @@ proc scoreAllTheID {} {
 	    # If similar score between isoforms we keep the longest one
 
 	    # puts "$ID $gene $trans - $score - $bestScore"
-
 	    if {$score > $bestScore} {
 
 		#puts "Better"
@@ -406,6 +406,8 @@ proc scoreAllTheID {} {
 			
 			set g_PPH2($ID) $thePPH2
 		    }
+		} else {
+		    if {![info exists bestL]} {set bestL $L}
 		}
 	    } 
 
@@ -448,11 +450,13 @@ proc scoreAllTheID {} {
 	    array unset LineOfThePathogenicGene "*"
 	} 
 
+	if {$bestGene eq ".."} {  ;# for SnpEff annotations 
+	    set bestGene $allGene
+	}
 	if {$bestGene != $allGene} {
 	    regsub "$bestGene" $allGene "" allGene
 	    set allGene "$bestGene/[join $allGene "/"]"
 	}
-
 	#puts "$allGene"
 
 
@@ -461,7 +465,6 @@ proc scoreAllTheID {} {
 	if {[info exists g_VaRank(DEBUG)]} {puts "Best $ID lreplace $bestL $i_gene $i_gene $allGene"}
 	
 	lappend g_lScore "$ID $bestScore"
-
     }
 
     puts "...classifying each genetic variant ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"

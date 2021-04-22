@@ -387,7 +387,7 @@ proc writeAllVariantsRankingByVar {} {
 		}
 	    }
 	    # Exomiser header columns
-	    append RankingText($patient) "\tEXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE"
+	    append RankingText($patient) "\tExomiser_gene_pheno_score\tHuman_pheno_evidence\tMouse_pheno_evidence\tFish_pheno_evidence"
 	    
 	    # End of header line
 	    append RankingText($patient) "\n"
@@ -418,7 +418,8 @@ proc writeAllVariantsRankingByVar {} {
 	set ID [lindex $duoIDscore 0]
 	set varankVarScore [lindex $duoIDscore 1]
 	set L [split $g_ANNOTATION($ID) "\t"]
-	# puts "$ID - $L"
+	#puts "g_ANNOTATION($ID): $g_ANNOTATION($ID)"
+	#puts "$ID - $L\n"
 
 	# Variation is computed but no patient has it...
 	if {![info exists g_vcfINFOS($ID)]} {continue}

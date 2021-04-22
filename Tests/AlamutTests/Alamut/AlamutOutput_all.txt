@@ -1,0 +1,85 @@
+Alamut Batch started: April 20 2021 - 18:48
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/AlamutInputFile_all.txt
+   Annotation file: ./Alamut/AlamutAnnotations_all.txt
+   Unprocessed variants file: ./Alamut/AlamutUnannotated_all.txt
+   Genome assembly: GRCh38
+   Strand: 1
+   Annotating on all transcripts: yes
+   Compute NNSPLICE predictions
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 4/20/21 6:48 PM
+Loading GRCh38 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (December 2020)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 100 vertebrates
+Starting annotation task...
+1_69511_A_G: 	GRCh38/OR4F5/NM_001005484.1: OK
+	GRCh38/OR4F5/NM_001005484.2: OK
+1_762273_G_A: Not on a known gene
+4_1795039_G_A: 	GRCh38/FGFR3/NM_000142.4: Miscalled variant?
+	GRCh38/FGFR3/NM_001163213.1: Miscalled variant?
+	GRCh38/FGFR3/NM_001354809.1: Miscalled variant?
+	GRCh38/FGFR3/NM_001354810.1: Miscalled variant?
+	GRCh38/FGFR3/NM_022965.3: Miscalled variant?
+	LRG_1021/FGFR3/NM_000142.4: Miscalled variant?
+	LRG_1021/FGFR3/NM_001163213.1: Miscalled variant?
+7_74026635_C_A: 	GRCh38/ELN/NM_000501.3: Miscalled variant?
+	GRCh38/ELN/NM_001081752.2: Miscalled variant?
+	GRCh38/ELN/NM_001081753.2: Miscalled variant?
+	GRCh38/ELN/NM_001081754.2: Miscalled variant?
+	GRCh38/ELN/NM_001081755.2: Miscalled variant?
+	GRCh38/ELN/NM_001278912.1: Miscalled variant?
+	GRCh38/ELN/NM_001278913.1: Miscalled variant?
+	GRCh38/ELN/NM_001278914.1: Miscalled variant?
+	GRCh38/ELN/NM_001278915.1: Miscalled variant?
+	GRCh38/ELN/NM_001278916.1: Miscalled variant?
+	GRCh38/ELN/NM_001278917.1: Miscalled variant?
+	GRCh38/ELN/NM_001278918.1: Miscalled variant?
+	GRCh38/ELN/NM_001278939.1: Miscalled variant?
+	GRCh38/ELN/NM_000501.4: Miscalled variant?
+8_12447057_C_T: 	GRCh38/FAM85A/XR_246650.3: Miscalled variant?
+	GRCh38/FAM85A/XR_252375.3: Miscalled variant?
+	GRCh38/FAM85A/XR_252376.3: Miscalled variant?
+	GRCh38/FAM85A/XR_948967.1: Miscalled variant?
+	GRCh38/FAM85A/XR_948968.1: Miscalled variant?
+	GRCh38/FAM85A/XR_948969.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956599.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956600.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956601.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956602.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956603.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956604.1: Miscalled variant?
+	GRCh38/FAM85A/XR_956605.1: Miscalled variant?
+19_13010643_G_T: 	GRCh38/NFIX/NM_001271043.2: Miscalled variant?
+	GRCh38/NFIX/NM_001271044.2: Miscalled variant?
+	GRCh38/NFIX/NM_002501.3: Miscalled variant?
+	GRCh38/NFIX/NM_001365902.3: Miscalled variant?
+Annotation batch finished 4/20/21 6:48 PM
+Duration: 5 seconds
+Alamut Batch finished: April 20 2021 - 18:48
+
+
+Alamut Batch finished: April 20 2021 - 18:48
+
+

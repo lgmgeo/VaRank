@@ -1,0 +1,4 @@
+SnpEff started: April 20 2021 - 11:36
+
+java -Xmx4g -jar /biolo/NGS/SnpEff/SnpEff-latest/SnpSift.jar dbnsfp -db /biolo/NGS/SnpEff/SnpEff-latest/db/dbNSFP/GRCh37/20210130_dbNSFP4.1.a_GRCh37.txt.gz /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.eff.varType.dbsnp.vcf > /maison/geoffroy/VaRank/VaRank/Tests/SnpEffTests/SnpEff/checkSnpEff/example.eff.varType.dbsnp.dbnsfp.vcf
+

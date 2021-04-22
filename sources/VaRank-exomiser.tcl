@@ -247,7 +247,8 @@ proc searchForAllGenesContainingVariants {sample} {
 
 
 # Creation of the g_Exomiser variable:
-# g_Exomiser($geneName) = EXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE
+# g_Exomiser($geneName) = Exomiser_gene_pheno_score\tHuman_pheno_evidence\tMouse_pheno_evidence\tFish_pheno_evidence
+
 # default = "\t-1.0\t\t\t"
 # INPUTS:
 # sample
@@ -310,10 +311,10 @@ proc runExomiser {sample L_Genes L_HPO L_3infos} {
 	    #    puts "$theKey -> $theValue\n"
 	    # }	    
 	    
-	    if {[catch {set EXOMISER_GENE_PHENO_SCORE [dict get $d_results "score"]} Message]} {
+	    if {[catch {set Exomiser_gene_pheno_score [dict get $d_results "score"]} Message]} {
 		continue
 	    }
-	    set EXOMISER_GENE_PHENO_SCORE [format "%.4f" $EXOMISER_GENE_PHENO_SCORE]
+	    set Exomiser_gene_pheno_score [format "%.4f" $Exomiser_gene_pheno_score]
 	    
 	    if {[catch {set d_phenotypeEvidence [dict get $d_results "phenotypeEvidence"]} Message]} {
 		continue
@@ -330,29 +331,29 @@ proc runExomiser {sample L_Genes L_HPO L_3infos} {
 	    # model -> organism HUMAN entrezGeneId 2263 humanGeneSymbol FGFR2 diseaseId OMIM:101600 diseaseTerm {Craniofacial-skeletal-dermatologic dysplasia} phenotypeIds {HP:0000494 HP:0005347 HP:0000452 HP:0003041 HP:0005280 HP:0011304 HP:0000006 HP:0000303 HP:0002308 HP:0006101 HP:0000327 HP:0000586 HP:0000244 HP:0000486 HP:0003795 HP:0002780 HP:0004440 HP:0003196 HP:0003070 HP:0010055 HP:0000238 HP:0000678 HP:0006110 HP:0001249 HP:0000218 HP:0000316 HP:0000453 HP:0002676} id OMIM:101600_2263
 	    #
 	    # bestModelPhenotypeMatches -> {query {id HP:0001156 label Brachydactyly} match {id HP:0006101 label {Finger syndactyly}} lcs {id MP:0002110 label {}} ic 2.6619180857144342 simj 0.64 score 1.3052308511743194} {query {id HP:0001363 label Craniosynostosis} match {id HP:0004440 label {Coronal craniosynostosis}} lcs {id HP:0001363 label Craniosynostosis} ic 5.851950660605321 simj 0.9411764705882353 score 2.3468528434490747} {query {id HP:0010055 label {Broad hallux}} match {id HP:0010055 label {Broad hallux}} lcs {id HP:0010055 label {Broad hallux}} ic 7.8438437682151125 simj 1.0 score 2.800686303072001} {query {id HP:0011304 label {Broad thumb}} match {id HP:0011304 label {Broad thumb}} lcs {id HP:0011304 label {Broad thumb}} ic 6.728560751270146 simj 1.0 score 2.5939469445750323}
-	    set HUMAN_PHENO_EVIDENCE {}
-	    set MOUSE_PHENO_EVIDENCE {}
-	    set FISH_PHENO_EVIDENCE  {}
+	    set Human_pheno_evidence {}
+	    set Mouse_pheno_evidence {}
+	    set Fish_pheno_evidence  {}
 	    foreach d_organism $d_phenotypeEvidence {
 		if {[catch {set actualOrganism [dict get $d_organism model organism]} Message]} {
 		    continue
 		} else {
-		    catch {lappend ${actualOrganism}_PHENO_EVIDENCE [dict get $d_organism model diseaseTerm]} Message
+		    catch {lappend ${actualOrganism}_pheno_evidence [dict get $d_organism model diseaseTerm]} Message
 		    if {[catch {set L_best [dict get $d_organism bestModelPhenotypeMatches]} Message]} {
 			continue
 		    } else {
 			foreach d_query $L_best {
-			    catch {lappend ${actualOrganism}_PHENO_EVIDENCE  [dict get $d_query query label]} Message
-			    catch {lappend ${actualOrganism}_PHENO_EVIDENCE  [dict get $d_query match label]} Message
+			    catch {lappend ${actualOrganism}_pheno_evidence  [dict get $d_query query label]} Message
+			    catch {lappend ${actualOrganism}_pheno_evidence  [dict get $d_query match label]} Message
 			}
 		    }
 		}
 	    }
-	    set HUMAN_PHENO_EVIDENCE [lsort -unique $HUMAN_PHENO_EVIDENCE]; if {$HUMAN_PHENO_EVIDENCE eq ""} {set HUMAN_PHENO_EVIDENCE "NA"}
-	    set MOUSE_PHENO_EVIDENCE [lsort -unique $MOUSE_PHENO_EVIDENCE]; if {$MOUSE_PHENO_EVIDENCE eq ""} {set MOUSE_PHENO_EVIDENCE "NA"}
-	    set FISH_PHENO_EVIDENCE  [lsort -unique $FISH_PHENO_EVIDENCE]; if {$FISH_PHENO_EVIDENCE eq ""} {set FISH_PHENO_EVIDENCE "NA"}
+	    set Human_pheno_evidence [lsort -unique $Human_pheno_evidence]; if {$Human_pheno_evidence eq ""} {set Human_pheno_evidence "NA"}
+	    set Mouse_pheno_evidence [lsort -unique $Mouse_pheno_evidence]; if {$Mouse_pheno_evidence eq ""} {set Mouse_pheno_evidence "NA"}
+	    set Fish_pheno_evidence  [lsort -unique $Fish_pheno_evidence]; if {$Fish_pheno_evidence eq ""} {set Fish_pheno_evidence "NA"}
 	    
-	    set g_Exomiser($sample,$geneName) "$EXOMISER_GENE_PHENO_SCORE\t[join $HUMAN_PHENO_EVIDENCE ";"]\t[join $MOUSE_PHENO_EVIDENCE ";"]\t[join $FISH_PHENO_EVIDENCE ";"]"
+	    set g_Exomiser($sample,$geneName) "$Exomiser_gene_pheno_score\t[join $Human_pheno_evidence ";"]\t[join $Mouse_pheno_evidence ";"]\t[join $Fish_pheno_evidence ";"]"
 
 	}
     }
@@ -364,7 +365,7 @@ proc runExomiser {sample L_Genes L_HPO L_3infos} {
 }
 
 
-# g_Exomiser($geneName) = EXOMISER_GENE_PHENO_SCORE\tHUMAN_PHENO_EVIDENCE\tMOUSE_PHENO_EVIDENCE\tFISH_PHENO_EVIDENCE
+# g_Exomiser($geneName) = Exomiser_gene_pheno_score\tHuman_pheno_evidence\tMouse_pheno_evidence\tFish_pheno_evidence
 # Return either only the score or all the annotation:
 # what = "score" or "all"
 proc ExomiserAnnotation {sample GeneName what} {
@@ -372,14 +373,14 @@ proc ExomiserAnnotation {sample GeneName what} {
     global g_Exomiser
 
     if {$what eq "all"} {
-	# Return all the annotation (EXOMISER_GENE_PHENO_SCORE HUMAN_PHENO_EVIDENCE MOUSE_PHENO_EVIDENCE FISH_PHENO_EVIDENCE) => for gene annotations
+	# Return all the annotation (Exomiser_gene_pheno_score Human_pheno_evidence Mouse_pheno_evidence Fish_pheno_evidence) => for gene annotations
 	if {[info exists g_Exomiser($sample,$GeneName)]} {
 	    return $g_Exomiser($sample,$GeneName)
 	} else {
 	    return "-1.0\tNA\tNA\tNA"
 	}
     } elseif {$what eq "score"} {
-	# Return only the score (EXOMISER_GENE_PHENO_SCORE) => for regulatory elements annotations
+	# Return only the score (Exomiser_gene_pheno_score) => for regulatory elements annotations
 	if {[info exists g_Exomiser($sample,$GeneName)]} {
 	    return [lindex [split $g_Exomiser($sample,$GeneName) "\t"] 0]
 	} else {

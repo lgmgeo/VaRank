@@ -227,6 +227,8 @@ proc checkSnpEff {} {
 	ReplaceTextInFile "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSample1" $vcfFile
 	WriteTextInFile "1\t69511\t.\tA\tG\t136\tPASS\tAC=2;DP=11;FREQ_HTZ=1.14;FREQ_HOM=34.66;DB;MG;EVS\tGT:AD:GQ:DP\t1/1:0,11:30:11" $vcfFile
 	WriteTextInFile "1\t762273\t.\tG\tA\t36\tPASS\tAC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG\tGT:AD:GQ:DP\t0/1:19,9:36:28" $vcfFile
+	WriteTextInFile "4\t1795039\t.\tG\tA\t35\tPASS\tAC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG\tGT:AD:GQ:DP\t0/1:19,9:36:28\t0/0:19,9:36:19" $vcfFile
+	WriteTextInFile "19\t13010643\t.\tG\tT\t33\tPASS\tAC=1;DP=28;FREQ_HTZ=11.93;FREQ_HOM=26.7;DB;MG\tGT:AD:GQ:DP\t0/1:19,9:36:28\t0/1:17,11:28:23" $vcfFile
     }
 
     # checking
@@ -534,7 +536,7 @@ proc parseSnpEffFile {} {
 	    set lGenes {}
 	    foreach ann $L_Ann {
 		set ann [split $ann "|"]
-		lappend lGenes [lindex $ann 3] 
+		lappend lGenes [lindex $ann 3]
 	    }
 	    set firstGN [lindex $lGenes 0]
 	    set lGenes  [lsort -unique $lGenes]
