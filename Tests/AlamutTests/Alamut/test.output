@@ -16,13 +16,13 @@ Program parameters:
    Input file: ./Alamut/test.input
    Annotation file: ./Alamut/test.ann
    Unprocessed variants file: ./Alamut/test.unann
-   Genome assembly: GRCh38
+   Genome assembly: GRCh37
    Strand: 1
    Annotating on all transcripts: yes
    Temporary files directory: /tmp
 -------------------------------------------------------
-Annotation batch processing started 4/20/21 6:48 PM
-Loading GRCh38 gene map...OK
+Annotation batch processing started 4/23/21 2:12 PM
+Loading GRCh37 gene map...OK
 Using data sources:
    Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
    NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
@@ -30,9 +30,12 @@ Using data sources:
    NCBI ClinVar (December 2020)
    1000 Genomes Project phase3 release (version 20150813 v5b)
    Cosmic v89
-   UCSC conservation (phastCons, phyloP): 100 vertebrates
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
 Starting annotation task...
-id: 	GRCh38/TMEM151A/NM_153266.3: Miscalled variant?
-	GRCh38/TMEM151A/NM_153266.4: Miscalled variant?
-Annotation batch finished 4/20/21 6:48 PM
-Duration: 0 seconds
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+	GRCh37/ZDHHC24/NM_207340.3: OK
+Annotation batch finished 4/23/21 2:13 PM
+Duration: 1 seconds

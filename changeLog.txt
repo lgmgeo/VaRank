@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.5                                                                                               #
+# VaRank 1.5.1                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -12,6 +12,13 @@
 # PeerJ. 2015. (10.7717/peerj.796)                                                                         #
 ############################################################################################################
 
+
+Apr 26, 2021: VaRank version 1.5.1 is posted
+- feat: The phenotype-driven analysis is now done by using the configfile
+- doc: Update of the Tests directory.
+- refactor: Refactoring the code for the writing of unnanotated variants
+- feat: Display the hostname information
+- feat: Add bugfix for MES processing
 
 Feb 02, 2021: VaRank version 1.5 is posted
 - feat: Include phenotype-driven annotations (HPO), based on Exomiser (Smedley et al., 2015)

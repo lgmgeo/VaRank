@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 
 ############################################################################################################
-# VaRank 1.5                                                                                               #
+# VaRank 1.5.1                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -80,7 +80,6 @@ source $g_VaRank(sourcesDir)/VaRank-upstreamDeletion.tcl
 
 puts "VaRank [VaRank_Version]"
 puts "VaRank is a program for Ranking genetic Variation from NGS data"
-puts "[exec hostname]"
 puts ""
 puts "Copyright (C) 2016-2021 GEOFFROY Veronique and MULLER Jean"
 puts ""
@@ -98,6 +97,7 @@ if {[info exists env(ALAMUT)]} {
 } else {
     set g_VaRank(snpeffDir) "$env(SNPEFF)"
 }
+puts "...running on [exec hostname]"
 
 #To activate the debug mode and see
 #set g_VaRank(DEBUG) 1
