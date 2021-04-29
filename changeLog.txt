@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.5.1                                                                                             #
+# VaRank 1.5.2                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -12,6 +12,10 @@
 # PeerJ. 2015. (10.7717/peerj.796)                                                                         #
 ############################################################################################################
 
+
+
+Apr 29, 2021: VaRank version 1.5.2 is posted
+- feat: Add the genome build in the outputfile name
 
 Apr 26, 2021: VaRank version 1.5.1 is posted
 - feat: The phenotype-driven analysis is now done by using the configfile

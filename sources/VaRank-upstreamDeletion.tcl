@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.5.1                                                                                             #
+# VaRank 1.5.2                                                                                             #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
