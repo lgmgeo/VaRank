@@ -415,7 +415,7 @@ proc configureVaRank {argv} {
     puts "\t******************************************"
     set lKey [array names g_VaRank]
     foreach key [lsort $lKey] {
-	if {$key eq "L_outputColHeader"} {continue}
+	if {[regexp "L_outputColHeader|skipAlamutChecks" $key]} {continue}
 	puts "\t-[format "%-20s %s" $key $g_VaRank($key)]"
     }
     puts "\t******************************************\n"

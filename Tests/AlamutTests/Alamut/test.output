@@ -21,13 +21,13 @@ Program parameters:
    Annotating on all transcripts: yes
    Temporary files directory: /tmp
 -------------------------------------------------------
-Annotation batch processing started 4/23/21 2:12 PM
+Annotation batch processing started 4/29/21 9:56 AM
 Loading GRCh37 gene map...OK
 Using data sources:
    Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
    NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
    NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
-   NCBI ClinVar (December 2020)
+   NCBI ClinVar (April 2021)
    1000 Genomes Project phase3 release (version 20150813 v5b)
    Cosmic v89
    UCSC conservation (phastCons, phyloP): 46 vertebrates
@@ -37,5 +37,46 @@ id: 	GRCh37/BBS1/NM_024649.4: OK
 	GRCh37/ZDHHC24/NM_001348571.1: OK
 	GRCh37/ZDHHC24/NM_207340.2: OK
 	GRCh37/ZDHHC24/NM_207340.3: OK
-Annotation batch finished 4/23/21 2:13 PM
+Annotation batch finished 4/29/21 9:56 AM
+Duration: 2 seconds
+alamut-batch version 1.11 / Qt 5.3.2
+******************************************************
+| This software program is a genomic variant         |
+| annotation system that does not provide            |
+| recommendations for medical diagnosis.             |
+| It must be used by human genetics professionals    |
+| and with critical judgment.                        |
+| Interactive Biosoftware cannot guarantee           |
+| the accuracy of information and predictions        |
+| it provides.                                       |
+| Please read the user manual carefully.             |
+******************************************************
+License valid until 6/24/21
+Connected to a-ht.interactive-biosoftware.com
+Program parameters:
+   Input file: ./Alamut/test.input
+   Annotation file: ./Alamut/test.ann
+   Unprocessed variants file: ./Alamut/test.unann
+   Genome assembly: GRCh37
+   Strand: 1
+   Annotating on all transcripts: yes
+   Temporary files directory: /tmp
+-------------------------------------------------------
+Annotation batch processing started 4/29/21 10:00 AM
+Loading GRCh37 gene map...OK
+Using data sources:
+   Genome Aggregation Database (gnomAD) v2.1 (Oct. 2018)
+   NCBI dbSNP build 151 (Mar. 2018) through Ensembl e95
+   NHLBI GO Exome Sequencing Project ESP (ESP6500SIV2 - July 2013)
+   NCBI ClinVar (April 2021)
+   1000 Genomes Project phase3 release (version 20150813 v5b)
+   Cosmic v89
+   UCSC conservation (phastCons, phyloP): 46 vertebrates
+Starting annotation task...
+id: 	GRCh37/BBS1/NM_024649.4: OK
+	GRCh37/BBS1/NM_024649.5: OK
+	GRCh37/ZDHHC24/NM_001348571.1: OK
+	GRCh37/ZDHHC24/NM_207340.2: OK
+	GRCh37/ZDHHC24/NM_207340.3: OK
+Annotation batch finished 4/29/21 10:00 AM
 Duration: 1 seconds

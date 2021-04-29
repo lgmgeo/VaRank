@@ -266,7 +266,7 @@ proc runExomiser {sample L_Genes L_HPO L_3infos} {
     if {$L_hpo($sample) eq ""} {return}
     if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $sample] eq -1} {return}
     
-    puts "\t...$sample: running Exomiser on [llength $L_Genes] gene names ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+    puts "\t...$sample: running Exomiser on [llength $L_Genes] gene names ($L_hpo($sample))"
 
     # Tcl 8.5 is required for use of the json package.
     package require http

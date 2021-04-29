@@ -1,4 +1,4 @@
-SnpEff started: April 20 2021 - 18:41
+SnpEff started: April 29 2021 - 09:57
 
 java -Xmx4g -jar /biolo/NGS/SnpEff/SnpEff-latest/SnpSift.jar varType ./SnpEff/Output/allinone.1.eff.vcf > ./SnpEff/Output/allinone.1.eff.varType.vcf
 

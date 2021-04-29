@@ -290,7 +290,7 @@ proc findBarcodesAndStatFor {ID} {
 ## Ranking by variant for all the variants, creation of 1 output file by patient.
 ## No filter applied on these output files.
 ##
-## OUTPUTS: g_VaRank(vcfDir)/"family"_"patient"_allVariants.rankingByVar.tsv (1 by patient)
+## OUTPUTS: g_VaRank(vcfDir)/"family"_"patient"_"genomeBuild"_allVariants.rankingByVar.tsv (1 by patient)
 ##
 proc writeAllVariantsRankingByVar {} {
 
@@ -313,10 +313,16 @@ proc writeAllVariantsRankingByVar {} {
     
     ## Delete output files if they already exist: 
     #############################################
+    set genomeBuild ""
+    if {[info exist g_VaRank(alamutHumanDB)]} {
+	set genomeBuild $g_VaRank(alamutHumanDB)
+    } elseif {[info exist g_VaRank(snpeffHumanDB)]} {
+	set genomeBuild $g_VaRank(snpeffHumanDB)
+    }
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 	    if {[file exists $outputfile]} {file delete -force $outputfile}
 	}
     }
@@ -360,7 +366,7 @@ proc writeAllVariantsRankingByVar {} {
 
 	  
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		    
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 	    file delete -force $outputfile	
 	
 
@@ -672,7 +678,7 @@ proc writeAllVariantsRankingByVar {} {
 		    foreach famHere [array names g_lPatientsOf] {
 			foreach patientHere $g_lPatientsOf($famHere) {			    
 			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
-			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
+			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_${genomeBuild}_allVariants.rankingByVar.tsv"
 			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
 			    set RankingText($patientHere) ""
 			}
@@ -909,7 +915,7 @@ proc writeAllVariantsRankingByVar {} {
 		    foreach famHere [array names g_lPatientsOf] {
 			foreach patientHere $g_lPatientsOf($famHere) {			    
 			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
-			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_allVariants.rankingByVar.tsv"
+			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_${genomeBuild}_allVariants.rankingByVar.tsv"
 			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
 			    set RankingText($patientHere) ""
 			}
@@ -926,7 +932,7 @@ proc writeAllVariantsRankingByVar {} {
 
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 	    WriteTextInFile [string trimright "$RankingText($patient)" "\n"] $outputfile
 	}
     }
@@ -951,7 +957,7 @@ proc writeAllVariantsRankingByVar {} {
 		
 		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 
-		set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+		set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 
 		set newText ""
 		foreach L [LinesFromFile $outputfile] {
@@ -1045,10 +1051,16 @@ proc writeAllVariantsRankingByGene {} {
 
     ## Delete output files if they already exist
     ############################################
+    set genomeBuild ""
+    if {[info exist g_VaRank(alamutHumanDB)]} {
+        set genomeBuild $g_VaRank(alamutHumanDB)
+    } elseif {[info exist g_VaRank(snpeffHumanDB)]} {
+        set genomeBuild $g_VaRank(snpeffHumanDB)
+    }
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByGene.tsv"
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByGene.tsv"
 	    if {[file exists $outputfile]} {file delete -force $outputfile}
 	}
     }
@@ -1066,7 +1078,7 @@ proc writeAllVariantsRankingByGene {} {
 	    
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 	    
-	    set rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+	    set rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 
 	    if {![file exists $rankFile]} {
 		puts "WARNING: $rankFile doesn't exist."
@@ -1157,13 +1169,13 @@ proc writeAllVariantsRankingByGene {} {
 
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByGene.tsv"
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByGene.tsv"
 	    ReplaceTextInFile "$textAllEx\n## FamilyBarcode: $g_lPatientsOf($fam)\n$HeaderText" $outputfile
 	    
 	    if {![info exists lVariantsRankingByGene($patient)]} {continue}
 	    
 	    ## Downloading each ranking file line.
-	    set  rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_allVariants.rankingByVar.tsv"
+	    set  rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 	    if {$rankFile eq ""} {continue}
 	    foreach L [LinesFromFile $rankFile] {
 		set id [lindex $L 0]
