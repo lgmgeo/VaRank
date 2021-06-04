@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.5.2                                                                                             #
+# VaRank 2.0                                                                                               #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -13,6 +13,8 @@
 ############################################################################################################
 
 
+Jun 04, 2021: VaRank version 2.0 is posted
+- refactor: Use of a SQLite database to improve the running time
 
 Apr 29, 2021: VaRank version 1.5.2 is posted
 - feat: Add the genome build in the outputfile name

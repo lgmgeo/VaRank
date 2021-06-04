@@ -28,7 +28,7 @@ HP:0000510,HP:0007754,HP:0000609,HP:0001513,HP:0200055
 -depthFilter:           10
 -freqFilter:            0.01
 -Homcutoff:             80
--Homstatus:             yes
+-Homstatus:             no
 -MEScutoff:             -15
 -metrics:               fr
 -NNScutoff:             -10

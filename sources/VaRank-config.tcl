@@ -1,5 +1,5 @@
 ############################################################################################################
-# VaRank 1.5.2                                                                                             #
+# VaRank 2.0                                                                                               #
 #                                                                                                          #
 # VaRank: a simple and powerful tool for ranking genetic variants                                          #
 #                                                                                                          #
@@ -41,7 +41,7 @@ proc VaRank_Version {} {
 
     global g_VaRank
 
-    set g_VaRank(Version) "1.5.2"
+    set g_VaRank(Version) "2.0"
 
     return $g_VaRank(Version)
 }
