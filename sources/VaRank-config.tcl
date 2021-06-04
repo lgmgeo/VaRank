@@ -41,7 +41,7 @@ proc VaRank_Version {} {
 
     global g_VaRank
 
-    set g_VaRank(Version) "1.4.3"
+    set g_VaRank(Version) "1.5.2"
 
     return $g_VaRank(Version)
 }

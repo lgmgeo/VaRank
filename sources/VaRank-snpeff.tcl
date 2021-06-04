@@ -417,7 +417,6 @@ proc parseSnpEffFile {} {
 
     global g_ANNOTATION
     global g_VaRank
-    global g_vcfINFOS
 
     ## Determine the header of g_ANNOTATION() (= g_ANNOTATION(#id))
     ###############################################################

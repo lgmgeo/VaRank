@@ -197,12 +197,11 @@ proc checkAlamut {} {
 }
   
 
-## Use of the g_vcfINFOS global variable to create the Alamut input file (one file for all patients)
+## Use of the "db_vcfData" SQLite database to create the Alamut input file (one file for all patients)
 proc createAlamutInputFile {} {
 
-    global g_vcfINFOS
     global g_VaRank
-
+    
     set VCFdir $g_VaRank(vcfDir)
     set AlamutInputFile "$VCFdir/Alamut/AlamutInputFile_all.txt"
 
@@ -212,19 +211,20 @@ proc createAlamutInputFile {} {
     file delete -force $AlamutInputFile
 
     set nbSNV 0
-    set AlamutText ""
-
-    foreach ID [set g_vcfINFOS(L_IDs)] {
+    set L_AlamutText {}
+    
+    set L_IDs [db_vcfData eval {SELECT ID FROM vcfSVdata}]
+    foreach ID $L_IDs {
 	# If ALT=*, then variant is not wrote into the input file for annotation.
 	if {[regexp "_\\*$" $ID]} {continue}
 
-	append AlamutText "$ID\t[join [lrange $g_vcfINFOS($ID) 0 3] "\t"]\n"		
+	set chromStartRefAlt [join [db_vcfData eval {SELECT chrom, pos, ref, alt FROM vcfSVdata WHERE ID = $ID}] "\t"]
+	lappend L_AlamutText "$ID\t$chromStartRefAlt"		
 	incr nbSNV
     }	
     if {[info exists g_VaRank(DEBUG)]} {puts "\t...$nbSNV variations created"}
 
-    regsub "\n$" $AlamutText "" AlamutText
-    WriteTextInFile $AlamutText $AlamutInputFile
+    WriteTextInFile [join $L_AlamutText "\n"] $AlamutInputFile
 
     return
 }
@@ -406,7 +406,7 @@ proc runAlamut {} {
 	puts "\t...Alamut Batch has already analysed all variations, continue ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 	return 1
     }
-    
+
     if {![info exists g_VaRank(AlamutHeader)]} {
 	#BUG HEADER PROBLEM one way to solve it
 
@@ -668,7 +668,6 @@ proc parseAlamutFile {} {
 
     global g_ANNOTATION
     global g_VaRank
-    global g_vcfINFOS
 
     set VCFdir $g_VaRank(vcfDir)
     set annFile "$VCFdir/Alamut/AlamutAnnotations_all.txt"
@@ -676,7 +675,6 @@ proc parseAlamutFile {} {
     puts "...parsing Alamut Batch results ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
     set f [open $annFile]
-    set g_vcfINFOS(#id) ""; # not to have a bug! Unset just below after the while.
 
     # Search for the alamut header line
     while {![eof $f]} {
@@ -702,7 +700,8 @@ proc parseAlamutFile {} {
 
 	# Load only variants from the patients analyzed
 	set ID [lindex $L 0]
-	if {![info exists g_vcfINFOS($ID)]} {continue}
+	set test [db_vcfData eval {SELECT chrom FROM vcfSVdata WHERE ID = $ID}]
+	if {$test eq "" || $ID eq "#id"} {continue}
 
 	# Replacing the empty columns by NA
 	# Note regsub is faster
@@ -724,7 +723,6 @@ proc parseAlamutFile {} {
 	lappend g_ANNOTATION($ID) "[join $newL "\t"]"
     }
     close $f
-    unset g_vcfINFOS(#id)
 
     # Analyzing the alamut header
     if {![info exists g_ANNOTATION(#id)]} {

@@ -27,6 +27,7 @@
 # along with this program; If not, see <http://www.gnu.org/licenses/>.                                     #
 ############################################################################################################
 
+
 proc ExternalAnnotations args {
 
     #To add external annotation to a gene in particular
@@ -148,7 +149,6 @@ proc ExternalAnnotations args {
 ##################################################################
 proc findBarcodesAndStatFor {ID} {
     global g_lPatientsOf
-    global g_vcfINFOS
     global g_famBarcode
     global g_allPatients
     global g_perso
@@ -158,19 +158,25 @@ proc findBarcodesAndStatFor {ID} {
     # totalReadDepth = DP information from the VCF
     # varReadDepth = NR information from the VCF
 
-    if {[info exists g_famBarcode]} {array unset g_famBarcode "*"}
-    if {[info exist g_perso]} {array unset g_perso "*"}
+    catch {array unset g_famBarcode "*"}
+    catch {array unset g_perso "*"}
     
+
     # Definition of $g_perso($patient) and $zygous($patient)
     ########################################################
     set L_TotalDepth {}
     set L_VariantDepth   {}    
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
-	    ##DEBUG
-	    #puts "$ID $fam - $patient >>>>> $g_vcfINFOS($ID)"
-	    
-	    if {[regexp "$patient:(\[^: \]+):(\[^: \]+):(\[^: \]+):(\[^: \]+)" $g_vcfINFOS($ID) match zygosity totalReadDepth varReadDepth QUALphred]} {
+	    set test [db_vcfData eval {SELECT homhet, dp, nr, qual FROM vcfSampleData AS vs \
+					   INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id \
+					   WHERE ID = $ID AND sampleName = $patient}]
+	    if {$test ne ""} {
+		set zygosity       [lindex $test 0]
+		set totalReadDepth [lindex $test 1]
+		set varReadDepth   [lindex $test 2]
+		set QUALphred      [lindex $test 3]
+
 		##DEBUG
 		#puts "$ID $zygosity\t$totalReadDepth\t$varReadDepth"
 
@@ -280,7 +286,6 @@ proc findBarcodesAndStatFor {ID} {
     }
 
     #puts "$ID $barcode $homCount $hetCount $alleleCount $sampleCount"
-
     #puts "$ID $avgVariantDepth $sdVariantDepth $countVariantDepth $avgTotalDepth $sdTotalDepth $countTotalDepth"
     return [list $barcode $homCount $hetCount $alleleCount $sampleCount $avgVariantDepth $sdVariantDepth $countVariantDepth $avgTotalDepth $sdTotalDepth $countTotalDepth]
 }
@@ -295,7 +300,6 @@ proc findBarcodesAndStatFor {ID} {
 proc writeAllVariantsRankingByVar {} {
 
     global g_vcfINFOS_Supp
-    global g_vcfINFOS
     global g_VaRank
     global g_ANNOTATION
     global g_PPH2
@@ -356,10 +360,20 @@ proc writeAllVariantsRankingByVar {} {
 	set g_VaRank(L_outputColHeader) [lreplace $g_VaRank(L_outputColHeader) $i $i]
     }
 
-
-    set n_lineslinesOfAllFilesTogether 0
     
-    ## Define the 3 headlines for each output ($RankingText($patient)):
+    ## Statistics
+    #############
+    if {[info exists g_VaRank(snpeffDir)]} {
+	set L_codingEffect $g_VaRank(codingEffect)
+	set L_varLocation  "unknown"
+    } else {
+	# Alamut coding effect useful for statistics
+	set L_codingEffect [list synonymous missense "stop gain" in-frame frameshift "start loss" "stop loss"]
+	set L_varLocation  [list intron upstream "5'UTR" "3'UTR" downstream "splice site"]
+    }
+
+    
+    ## Define the 3 headlines for each output ($outputLine($patient)):
     ###################################################################
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
@@ -374,51 +388,42 @@ proc writeAllVariantsRankingByVar {} {
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}			     
 	    
 	    # Compulsory header columns
-	    set    RankingText($patient) "## Barcode: $g_allPatients"
-	    append RankingText($patient) "\n## FamilyBarcode: $g_lPatientsOf($fam)"
-	    append RankingText($patient) "\n[join $g_VaRank(L_outputColHeader) "\t"]"
+	    set    outputLine($patient) "## Barcode: $g_allPatients"
+	    append outputLine($patient) "\n## FamilyBarcode: $g_lPatientsOf($fam)"
+	    append outputLine($patient) "\n[join $g_VaRank(L_outputColHeader) "\t"]"
 	    
 	    # Optional header columns
 	    if {[info exists g_vcfINFOS_Supp(Header)] && [set g_vcfINFOS_Supp(Header)] ne {}} {
 		set rajoutVCFinfos "[join [set g_vcfINFOS_Supp(Header)] "\t"]"
-		append RankingText($patient) "\t$rajoutVCFinfos"
+		append outputLine($patient) "\t$rajoutVCFinfos"
 	    } 
 	    if {[info exists g_VaRank(extann)] && $g_VaRank(extann) ne ""} {
 		ExternalAnnotations
-		append RankingText($patient) "\tgenes"
+		append outputLine($patient) "\tgenes"
 		foreach F [ExternalAnnotations L_Files] {
 		    #puts $F 
 		    #puts "Header >[ExternalAnnotations $F Header]<"
-		    append RankingText($patient) "\t[ExternalAnnotations $F Header]"
+		    append outputLine($patient) "\t[ExternalAnnotations $F Header]"
 		}
 	    }
 	    # Exomiser header columns
-	    append RankingText($patient) "\tExomiser_gene_pheno_score\tHuman_pheno_evidence\tMouse_pheno_evidence\tFish_pheno_evidence"
+	    append outputLine($patient) "\tExomiser_gene_pheno_score\tHuman_pheno_evidence\tMouse_pheno_evidence\tFish_pheno_evidence"
 	    
 	    # End of header line
-	    append RankingText($patient) "\n"
+	    lappend L_outputLine($patient) $outputLine($patient)
+	    set outputLine($patient) ""
 	}
     }
 
 
-    ## Statistics
-    #############
-    if {[info exists g_VaRank(snpeffDir)]} {
-	set L_codingEffect $g_VaRank(codingEffect)
-	set L_varLocation  "unknown"
-    } else {
-	# Alamut coding effect useful for statistics
-	set L_codingEffect [list synonymous missense "stop gain" in-frame frameshift "start loss" "stop loss"]
-	set L_varLocation  [list intron upstream "5'UTR" "3'UTR" downstream "splice site"]
-    }
-
-    
     ## Downloading genetic variants annotated by snpeff or alamut.
     ## AlamutAnalysis = "yes"
     ## g_lScore is sorted in descending order of scores (with no more redundancy).
     ##############################################################################
     puts "...writing output files: all variants, ranking by var ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
     puts "\t...from annotated data ([llength $g_lScore] variants) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+
+    set outputSize 0
 
     foreach duoIDscore $g_lScore {
 	set ID [lindex $duoIDscore 0]
@@ -427,14 +432,15 @@ proc writeAllVariantsRankingByVar {} {
 	#puts "g_ANNOTATION($ID): $g_ANNOTATION($ID)"
 	#puts "$ID - $L\n"
 
-	# Variation is computed but no patient has it...
-	if {![info exists g_vcfINFOS($ID)]} {continue}
-
+	set chromStartRefAltRs [db_vcfData eval {SELECT chrom, pos, ref, alt, rsID, rsValid FROM vcfSVdata WHERE ID = $ID}]
+	if {$chromStartRefAltRs eq ""} {continue}
+	
+	# => Variation is computed and at least 1 patient has it...	
 	set variantID $ID
-	set chr   [lindex $g_vcfINFOS($ID) 0]
-	set start [lindex $g_vcfINFOS($ID) 1]
-	set ref   [lindex $g_vcfINFOS($ID) 2]
-	set alt   [lindex $g_vcfINFOS($ID) 3]
+	set chr   [lindex $chromStartRefAltRs 0]
+	set start [lindex $chromStartRefAltRs 1]
+	set ref   [lindex $chromStartRefAltRs 2]
+	set alt   [lindex $chromStartRefAltRs 3]
 	set end   [expr {$start+[string length $ref]-1}]
 	#DEBUG
 	#puts "startrefalt:$ID - $start - $ref - $alt"
@@ -452,23 +458,24 @@ proc writeAllVariantsRankingByVar {} {
 	}
 
 	# If rsID is given by VCF, we can keep the rsID and the rsValidated informations
+	# (Else, "rsID and rsValidations" are already defined above with "$L_colNamesFromAnnotation")
 	if {$g_VaRank(rsFromVCF) eq "yes"} {
-	    set rsIdVCF [lindex $g_vcfINFOS($ID) 4]
+	    set rsIdVCF [lindex $chromStartRefAltRs 4]
 	    # Rs from VCF is GOOD
 	    if {![isNotAnRS $rsIdVCF]} {
 		set rsId  $rsIdVCF
-		set rsValidations [lindex $g_vcfINFOS($ID) 5]
+		set rsValidations [lindex $chromStartRefAltRs 5]
 	    } else {
 		# rsID from vcf is not a good rsID testing from Alamut
 		set rsId "NA"; set rsValidations "NA"
 	    }
-	}
+	} 
 	
 	# Definition of the following values:
 	# barcode homCount hetCount alleleCount sampleCount avgVariantDepth sdVariantDepth countVariantDepth avgTotalDepth sdTotalDepth countTotalDepth
 	# alleleFrequency
-        set infos           ""
-        set infos           [findBarcodesAndStatFor $ID]
+        set infos ""
+        set infos [findBarcodesAndStatFor $ID]
 	lassign $infos barcode homCount hetCount alleleCount sampleCount avgVariantDepth sdVariantDepth countVariantDepth avgTotalDepth sdTotalDepth countTotalDepth
 
 	set alleleFrequency [format "%.4f" [expr {$alleleCount*1.0/2/$sampleCount}]]
@@ -539,15 +546,45 @@ proc writeAllVariantsRankingByVar {} {
 	set annotationAnalysis "yes"
 	set barcode "'$barcode'"
 
+	
+        # Searching for annotation specific of each patient #################################################
+	# Then append all annotations (non specific + specific) to the "outputLine(patient)" variable #######
+	
+	# For the above given ID, tmp definition of vcfINFOS_Supp_Tmp($patient)
+	if {[set g_VaRank(vcfInfo)]=="yes"} {
+	    catch {unset vcfINFOS_Supp_Tmp}
+	    foreach fam [array names g_lPatientsOf] {
+		foreach patient $g_lPatientsOf($fam) {
+		    set theInfo [db_vcfData eval {SELECT INFO FROM vcfSampleData AS vs \
+						   INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id \
+						   WHERE ID = $ID AND sampleName = $patient}]
+		    if {$theInfo eq ""} {continue}
+		    set theInfo [lindex $theInfo 0]; # SQLite return a "1 element" list (that we don't want)
+		    if {$g_VaRank(vcfFields)=="all"} {
+			set vcfINFOS_Supp_Tmp($patient) [split $theInfo ";"]
+		    } else {
+			foreach duoInfos_VCF [split $theInfo ";"] {
+			    set duo_Header_Infos_VCF [split $duoInfos_VCF "="]
+			    set Header [lindex $duo_Header_Infos_VCF 0]
+			    if {[lsearch -exact $g_VaRank(vcfFields) $Header]!=-1} {
+				lappend vcfINFOS_Supp_Tmp($patient) $duoInfos_VCF
+			    }
+			}
+		    }
+		}
+	    }
+	}
 
-	# Searching for annotation specific of each patient
-	# Then append all annotations (non specific + specific) to the "RankingText(patient)" variable
 	foreach fam [array names g_lPatientsOf] {
 	    foreach patient $g_lPatientsOf($fam) {
 
-		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		
-		if {![info exists g_vcfINFOS($ID,$patient)]} {continue}
+		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 		
+		set theInfo [db_vcfData eval {SELECT INFO FROM vcfSampleData AS vs \
+						  INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id \
+						  WHERE ID = $ID AND sampleName = $patient}]
+		if {$theInfo eq ""} {continue}
+
 		set familyBarcode "'$g_famBarcode($fam)'"
 
 		set zygosity               [lindex $g_perso($patient) 0]
@@ -606,7 +643,7 @@ proc writeAllVariantsRankingByVar {} {
 		foreach colName $g_VaRank(L_outputColHeader) {
 		    lappend L_rankText [set $colName]
 		}
-		append RankingText($patient) [join $L_rankText "\t"] ;# add varankVarScore here
+		append outputLine($patient) [join $L_rankText "\t"] ;# add varankVarScore here
 
 		# Append values for optional columns (the ones from the VCF files):
 		###################################################################
@@ -617,7 +654,7 @@ proc writeAllVariantsRankingByVar {} {
 		set rajoutVCFinfos {}
 		if {[set g_VaRank(vcfInfo)] eq "yes"} {
 		    set l_Infos_VCF ""
-		    if {[info exists g_vcfINFOS_Supp($ID,$patient)]} {set l_Infos_VCF [set g_vcfINFOS_Supp($ID,$patient)]}
+		    if {[info exists vcfINFOS_Supp_Tmp($patient)]} {set l_Infos_VCF [set vcfINFOS_Supp_Tmp($patient)]}
 		    foreach infos_VCF $l_Infos_VCF {
 			set l_Header_Infos_VCF ""
 			set Header ""
@@ -641,7 +678,7 @@ proc writeAllVariantsRankingByVar {} {
 		    set rajoutVCFinfos [join $rajoutVCFinfos "\t"]
 		}		
 		if {$rajoutVCFinfos ne {}} {
-		    append RankingText($patient) "\t$rajoutVCFinfos"
+		    append outputLine($patient) "\t$rajoutVCFinfos"
 		} 
 
 		# Adding external user annotations at the end of each output files line
@@ -649,13 +686,13 @@ proc writeAllVariantsRankingByVar {} {
 		if {[info exists g_VaRank(extann)] && $g_VaRank(extann) ne ""} {
 		    ## Adding external annotations only on the first gene (decided the 19/07/2018 with Jean)		    
 		    set g [lindex [split $gene "/"] 0] 
-		    append RankingText($patient) "\t$g"
+		    append outputLine($patient) "\t$g"
 		    foreach F [ExternalAnnotations L_Files] {
 			if {[ExternalAnnotations $F $g] ne ""} {
-			    append RankingText($patient) "\t[ExternalAnnotations $F $g]"
+			    append outputLine($patient) "\t[ExternalAnnotations $F $g]"
 			} else {			    
 			    set NbHeader [llength [split [ExternalAnnotations $F Header] "\t"]]
-			    append RankingText($patient) "\t[join [lrepeat $NbHeader ""] "\t"]"
+			    append outputLine($patient) "\t[join [lrepeat $NbHeader ""] "\t"]"
 			}
 		    }
 		}
@@ -664,57 +701,65 @@ proc writeAllVariantsRankingByVar {} {
 		############################
 		## Adding exomiser annotations only on the first gene
 		set g [lindex [split $gene "/"] 0] 
-		append RankingText($patient) "\t[ExomiserAnnotation "$patient" "$g" "all"]" 
+		append outputLine($patient) "\t[ExomiserAnnotation "$patient" "$g" "all"]" 
 		
 		# End of annotation line
 		########################
-		append RankingText($patient) "\n"
+		lappend L_outputLine($patient) $outputLine($patient)
+		incr outputSize [string length $outputLine($patient)]
+		set outputLine($patient) ""
 
 		# Intermediate writing to save RAM
 		##################################
-		incr n_linesOfAllFilesTogether
-		if {$n_linesOfAllFilesTogether > 500000} {
-		    set n_linesOfAllFilesTogether 0
+		if {$outputSize > 8000000} {
+		    set outputSize 0
 		    foreach famHere [array names g_lPatientsOf] {
 			foreach patientHere $g_lPatientsOf($famHere) {			    
 			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
 			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_${genomeBuild}_allVariants.rankingByVar.tsv"
-			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
-			    set RankingText($patientHere) ""
+			    if {[info exists L_outputLine($patientHere)]} {
+				WriteTextInFile [join "$L_outputLine($patientHere)" "\n"] $outputfileHere
+				unset L_outputLine($patientHere)
+			    }
 			}
 		    }
 		}
 	    }
-	}	
+	}
     }
 
     ## Downloading genetic variants not analysed by alamut.
     ## AlamutAnalysis = "no"
     #######################################################
-    
+
+    # Calculate the number of unannotated variants
     set n_notannotated 0
-    foreach ID [set g_vcfINFOS(L_IDs)] {
+    set L_IDs [db_vcfData eval {SELECT ID FROM vcfSVdata}]
+
+    foreach ID $L_IDs {
 	if {[info exists g_ANNOTATION($ID)]} {continue}
-	# Variation is computed but no patient has it... (GT=0/0 for all patients)
-	if {![info exists g_vcfINFOS($ID)]} {continue}
+        # => Variation is in VCF but not annotated
 	incr n_notannotated
     }
     puts "\t...from data not annotated ($n_notannotated variants) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
+    set outputSize 0
+
     # Needed if there are only variants not analysed by Alamut
     set i_gene [lsearch -exact [split $g_ANNOTATION(#id) "\t"] "gene"]
-
-    foreach ID [set g_vcfINFOS(L_IDs)] {
-	# foreach ID [array names g_vcfINFOS] {}
+    foreach ID $L_IDs {
 	if {[info exists g_ANNOTATION($ID)]} {continue}
-	# Variation is computed but no patient has it... (GT=0/0 for all patients)
-	if {![info exists g_vcfINFOS($ID)]} {continue}
+        # => Variation is in VCF but not annotated
 
+	set chromStartRefAltRs [db_vcfData eval {SELECT chrom, pos, ref, alt, rsID, rsValid FROM vcfSVdata WHERE ID = $ID}]
+	if {$chromStartRefAltRs eq ""} {continue}
+	
+	# => Variation is computed and at least 1 patient has it...	
 	set variantID $ID
-	set chr   [lindex $g_vcfINFOS($ID) 0]
-	set start [lindex $g_vcfINFOS($ID) 1]
-	set ref   [lindex $g_vcfINFOS($ID) 2]
-	set alt   [lindex $g_vcfINFOS($ID) 3]
+	set chr   [lindex $chromStartRefAltRs 0]
+	set start [lindex $chromStartRefAltRs 1]
+	set ref   [lindex $chromStartRefAltRs 2]
+	set alt   [lindex $chromStartRefAltRs 3]
 	set end   [expr {$start+[string length $ref]-1}]
 
 	#DEBUG
@@ -738,7 +783,7 @@ proc writeAllVariantsRankingByVar {} {
 	
 	## Attribution of a gene name for upstream deletion (from VCF 4.2, ALT='*')
 	if {[regexp "_\\*$" $ID]} {
-	    set gene     [geneForStarID $ID $i_gene]
+	    set gene    [geneForStarID $ID $i_gene]
 	    set varType "upstream deletion"
 	} else {
 	    set gene    "NA"
@@ -747,16 +792,14 @@ proc writeAllVariantsRankingByVar {} {
 
 	# If rsID is given by VCF, we can keep the rsID and the rsValidated informations
 	if {[set g_VaRank(rsFromVCF)] eq "yes"} {
-	    set rsIdVCF [lindex $g_vcfINFOS($ID) 4]
+	    set rsIdVCF   [lindex $chromStartRefAltRs 4]
 	    #rs from VCF is GOOD
 	    if {![isNotAnRS $rsIdVCF]} {
-		set rsId  $rsIdVCF
-		set rsValidations [lindex $g_vcfINFOS($ID) 5]
+		set rsId $rsIdVCF
+		set rsValidations [lindex $chromStartRefAltRs 5]
 	    } else {
 		set rsId "NA"; set rsValidations "NA"
 	    }
-	} else {
-	    set rsId "NA"; set rsValidations "NA"
 	}
 
 	# Definition of the following values:
@@ -767,7 +810,7 @@ proc writeAllVariantsRankingByVar {} {
 	lassign $infos barcode homCount hetCount alleleCount sampleCount avgVariantDepth sdVariantDepth countVariantDepth avgTotalDepth sdTotalDepth countTotalDepth
 
 	set alleleFrequency [format "%.4f" [expr {$alleleCount*1.0/2/$sampleCount}]]
-	# Change metrics to "." to ","
+	# Change metrics from "." to ","
 	if {[set g_VaRank(metrics)] eq "fr"} {regsub {\.} $alleleFrequency "," alleleFrequency}
 
 	# Definition of SamVa
@@ -794,13 +837,44 @@ proc writeAllVariantsRankingByVar {} {
 	set barcode "'$barcode'"
 
 
-	# Searching for annotation specific of each patient
-	# Then append all annotations (non specific + specific) to the "RankingText(patient)" variable
+        # Searching for annotation specific of each patient #################################################
+	# Then append all annotations (non specific + specific) to the "outputLine(patient)" variable #######
+	
+	# For the above given ID, tmp definition of vcfINFOS_Supp_Tmp($patient)
+	if {[set g_VaRank(vcfInfo)]=="yes"} {
+	    catch {unset vcfINFOS_Supp_Tmp}
+	    foreach fam [array names g_lPatientsOf] {
+		foreach patient $g_lPatientsOf($fam) {
+		    set theInfo [db_vcfData eval {SELECT INFO FROM vcfSampleData AS vs \
+						   INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id \
+						   WHERE ID = $ID AND sampleName = $patient}]
+		    if {$theInfo eq ""} {continue}
+		    set theInfo [lindex $theInfo 0]; # SQLite return a "1 element" list (that we don't want)
+		    if {$g_VaRank(vcfFields)=="all"} {
+			set vcfINFOS_Supp_Tmp($patient) [split $theInfo ";"]
+		    } else {
+			foreach duoInfos_VCF [split $theInfo ";"] {
+			    set duo_Header_Infos_VCF [split $duoInfos_VCF "="]
+			    set Header [lindex $duo_Header_Infos_VCF 0]
+			    if {[lsearch -exact $g_VaRank(vcfFields) $Header]!=-1} {
+				lappend vcfINFOS_Supp_Tmp($patient) $duoInfos_VCF
+			    }
+			}
+		    }
+		}		             
+	    }
+	}
+
 	catch {unset attributionForThisID}
 	foreach fam [array names g_lPatientsOf] {
 	    foreach patient $g_lPatientsOf($fam) {
+		
 		if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}		
-		if {![info exists g_vcfINFOS($ID,$patient)]} {continue}
+
+		set theInfo [db_vcfData eval {SELECT INFO FROM vcfSampleData AS vs \
+						  INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id \
+						  WHERE ID = $ID AND sampleName = $patient}]
+		if {$theInfo eq ""} {continue}
 
 		set familyBarcode "'$g_famBarcode($fam)'"
 		
@@ -821,10 +895,11 @@ proc writeAllVariantsRankingByVar {} {
 		    set g_Statistics($patient) 0
 		} 
 		incr g_Statistics($patient) 
-		incr g_Statistics($patient,unknown)
 		
 		set HomHet [lindex [split $g_perso($patient) "\t"] 0]
-		
+
+		# $codingEffect eq "NA" && $varLocation eq "NA"
+		incr g_Statistics($patient,unknown)
 		if {[regexp "hom" $HomHet]} {
 		    incr g_Statistics($patient,unknown,Hom)
 		} elseif {[regexp "het" $HomHet]} {
@@ -838,7 +913,7 @@ proc writeAllVariantsRankingByVar {} {
 		foreach colName $g_VaRank(L_outputColHeader) {
 		    lappend L_rankText [set $colName]
 		}
-		append RankingText($patient) [join $L_rankText "\t"]
+		append outputLine($patient) [join $L_rankText "\t"]
 		#puts "!! [join $L_rankText "\t"]"		
 	
 		# Append values for optional columns (the ones from the VCF files):
@@ -854,7 +929,7 @@ proc writeAllVariantsRankingByVar {} {
 		    set l_data_ID    {}		
 		    if {[set g_VaRank(vcfInfo)] eq "yes"} {
 			set l_Infos_VCF ""
-			if {[info exists g_vcfINFOS_Supp($ID,$patient)]} {set l_Infos_VCF [set g_vcfINFOS_Supp($ID,$patient)]}		    
+		        if {[info exists vcfINFOS_Supp_Tmp($patient)]} {set l_Infos_VCF [set vcfINFOS_Supp_Tmp($patient)]}
 			foreach infos_VCF $l_Infos_VCF {
 			    set l_Header_Infos_VCF ""
 			    set Header ""
@@ -879,7 +954,7 @@ proc writeAllVariantsRankingByVar {} {
 		    }
 		}
 		if {$rajoutVCFinfos ne {}} {
-		    append RankingText($patient) "\t$rajoutVCFinfos"
+		    append outputLine($patient) "\t$rajoutVCFinfos"
 		} 
 		    
 		
@@ -905,23 +980,30 @@ proc writeAllVariantsRankingByVar {} {
 			append ExtAnnPat "\t-1.0\tNA\tNA\tNA"
 		    }
 		}
-		append RankingText($patient) "$ExtAnnPat\n"
+		append outputLine($patient) "$ExtAnnPat"
+		
+		# End of annotation line
+		########################
+		lappend L_outputLine($patient) $outputLine($patient)
+		incr outputSize [string length $outputLine($patient)]
+		set outputLine($patient) ""
 		
 		# Intermediate writing to save RAM
 		##################################
-		incr n_linesOfAllFilesTogether
-		if {$n_linesOfAllFilesTogether > 500000} {
-		    set n_linesOfAllFilesTogether 0
+		if {$outputSize > 8000000} {
+		    set outputSize 0
 		    foreach famHere [array names g_lPatientsOf] {
 			foreach patientHere $g_lPatientsOf($famHere) {			    
 			    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patientHere] eq -1} {continue}		    
 			    set outputfileHere "$g_VaRank(vcfDir)/[set famHere]_[set patientHere]_${genomeBuild}_allVariants.rankingByVar.tsv"
-			    WriteTextInFile [string trimright "$RankingText($patientHere)" "\n"] $outputfileHere
-			    set RankingText($patientHere) ""
+			    if {[info exists L_outputLine($patientHere)]} {
+				WriteTextInFile [join "$L_outputLine($patientHere)" "\n"] $outputfileHere
+				unset L_outputLine($patientHere)
+			    }
 			}
 		    }
 		}
-	    }
+            }
 	}
     }	
     
@@ -933,12 +1015,12 @@ proc writeAllVariantsRankingByVar {} {
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
 
 	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
-	    WriteTextInFile [string trimright "$RankingText($patient)" "\n"] $outputfile
+	    if {[info exists L_outputLine($patient)]} {
+		WriteTextInFile [join "$L_outputLine($patient)" "\n"] $outputfile
+		unset L_outputLine($patient)
+	    }
 	}
     }
-
-    
-
 
     ## NOT BY DEFAULT!!
     ## Replacing sequences with length > $g_VaRank(maxSizeOfSeq) bp.
@@ -1002,7 +1084,6 @@ proc writeAllVariantsRankingByVar {} {
 			set correspondance($newVariantID) $variantID
 			set Ls [lreplace $Ls $i_variantID $i_variantID $newVariantID]
 			## For the writing of output files: all variants, ranking by gene:
-			set g_vcfINFOS($newVariantID) $g_vcfINFOS($variantID)
 		    } elseif {$lengthAlt > $g_VaRank(maxSizeOfSeq)} {
 			set alt "${lengthAlt}bp"
 			set Ls [lreplace $Ls $i_alt $i_alt $alt]
@@ -1021,7 +1102,6 @@ proc writeAllVariantsRankingByVar {} {
 			set correspondance($newVariantID) $variantID
 			set Ls [lreplace $Ls $i_variantID $i_variantID $newVariantID]
 			## For the writing of output files: all variants, ranking by gene:
-			set g_vcfINFOS($newVariantID) $g_vcfINFOS($variantID)
 		    }
 		    append newText "[join $Ls "\t"]\n"
 		}
@@ -1045,12 +1125,9 @@ proc writeAllVariantsRankingByGene {} {
     global g_VaRank
     global g_lPatientsOf
     global g_allPatients
-    global g_vcfINFOS
 
     puts "...writing output files: all variants, ranking by gene ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
-    ## Delete output files if they already exist
-    ############################################
     set genomeBuild ""
     if {[info exist g_VaRank(alamutHumanDB)]} {
         set genomeBuild $g_VaRank(alamutHumanDB)
@@ -1059,47 +1136,45 @@ proc writeAllVariantsRankingByGene {} {
     }
     foreach fam [array names g_lPatientsOf] {
 	foreach patient $g_lPatientsOf($fam) {
-	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
+	    #puts "\t...$patient ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+	    
+	    ## Delete output file if it already exists
 	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByGene.tsv"
-	    if {[file exists $outputfile]} {file delete -force $outputfile}
-	}
-    }
-    
+	    if {[file exists $outputfile]} {file delete -force $outputfile} 
 
-    ## Searches for all htz and hom SNV, for each patient and for each gene:
-    ## --> creation of lVariants($pat,$gene) variables
-    ## --> creation of lGenes and lID variables
-    ##########################################################################
-    set lGenes {}
-    set lID    {}
-    puts "\t...searching for all variants ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
-    foreach fam [array names g_lPatientsOf] {
-	foreach patient $g_lPatientsOf($fam) {
-	    
+	    ## Check if this output patient file is required in $g_VaRank(SamOut)
 	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-	    
-	    set rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
 
-	    if {![file exists $rankFile]} {
-		puts "WARNING: $rankFile doesn't exist."
+	    ## Searches for all htz and hom SNV, for each patient and for each gene:
+	    ## --> creation of lVariants($gene) variables
+	    ## --> creation of lGenes and lID variables
+	    catch {unset lVariants}
+	    set lGenes {}
+	    set lID    {}
+	    set rankingByVarFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
+	    if {![file exists $rankingByVarFile]} {
+		puts "WARNING: $rankingByVarFile doesn't exist."
 		continue
 	    }
-
-	    foreach L [LinesFromFile $rankFile] {
+	    #puts "\t\t...searching for all variants ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+	    catch {unset Tab}
+	    foreach L [LinesFromFile $rankingByVarFile] {
 		if {$L eq ""} {continue}
 		if {[regexp "^## Barcode: (.*)" $L match allExomes]} {set textAllEx "$L"; continue}
 		if {[regexp "^##" $L]} {continue}
 		if {[regexp "^variantID" $L]} {
 		    set HeaderText "$L"
 		    set L [split $L "\t"]
-		    set i_gene  [lsearch -regexp $L "gene$"];            if {$i_gene  eq -1} {puts "gene: column number not found - Exit"; exit}
-		    set i_score [lsearch -regexp $L "^varankVarScore$"]; if {$i_score eq -1} {puts "varankVarScore: column number not found - Exit"; exit}
+		    set i_gene     [lsearch -regexp $L "gene$"];            if {$i_gene  eq -1} {puts "gene: column number not found - Exit"; exit}
+		    set i_score    [lsearch -regexp $L "^varankVarScore$"]; if {$i_score eq -1} {puts "varankVarScore: column number not found - Exit"; exit}
+		    set i_zygosity [lsearch -regexp $L "^zygosity$"];       if {$i_zygosity eq -1} {puts "zygosity: column number not found - Exit"; exit}
 		    continue
 		}
 		set L [split $L "\t"]
 		set id   [lindex $L 0]  
-		set gene [lindex $L $i_gene] 
+		set gene [lindex $L $i_gene]
 		if {$gene eq "NA"} {continue}
+		set zygosity [lindex $L $i_zygosity]
 		## In case of value like: gene = "MC1R/TUBB3", each gene have to be treated separately.
 		## (Else, bug to assembly variants from gene = "MC1R/TUBB3" with variants from gene = "MC1R")
 		## => but, by this way, we introduce redondancy in "*allVariants.rankingByGene.tsv" files.
@@ -1111,98 +1186,76 @@ proc writeAllVariantsRankingByGene {} {
 		    #if {[lsearch -exact $lGenes "$gene"] eq -1} {lappend lGenes $gene}
 		    set score [lindex $L $i_score] 
 		    
-		    lappend lVariants($patient,$gene) "$id $score"
+		    lappend lVariants($gene) "$id $score $zygosity"
 		}
 	    }
-	}
-    }
 
-    ## Calculate the score for each gene:
-    ## - If the most deleterious variant is hom ("scoreMDHom"), gene score = "scoreMDhom" x 2
-    ## - If the most deleterious variant is het ("scoreMDHet"): 
-    ##		- if there is another variant in the same gene, gene score = "scoreMDHet" + "following score"
-    ##		- if there isn't another variant in the same gene, gene score = "scoreMDHet" x 2
-    ##
-    ## --> creation of the variable lVariantsRankingByGene($patient)
-    ###########################################################################################################
-    puts "\t...scoring of each gene  ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
-    foreach patient $g_allPatients {
-
-	if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-
-	foreach gene $lGenes {
-	    if {![info exists lVariants($patient,$gene)]} {continue}
-	    set lVariants($patient,$gene) [lsort -command DescendingSortOnElement1 $lVariants($patient,$gene)]
-	    set liste {}
-	    foreach duoIDScore $lVariants($patient,$gene) {
-		set id [lindex $duoIDScore 0]
-		lappend liste $id
-	    }
-	    set maxScore1 [lindex [lindex $lVariants($patient,$gene) 0] 1]
-	    if {[llength $lVariants($patient,$gene)] eq 1} {
-		set BestDuoScore "[expr {$maxScore1*2}]"
-	    } else {
-		set bestID [lindex [lindex $lVariants($patient,$gene) 0] 0]
-		if {[regexp "$patient:(\[^: \]+):" $g_vcfINFOS($bestID) match zygosity] && [regexp -nocase "hom" $zygosity]} {
+	    ## Calculate the score for each gene:
+	    ## - If the most deleterious variant is hom ("scoreMDHom"), gene score = "scoreMDhom" x 2
+	    ## - If the most deleterious variant is het ("scoreMDHet"): 
+	    ##		- if there is another variant in the same gene, gene score = "scoreMDHet" + "following score"
+	    ##		- if there isn't another variant in the same gene, gene score = "scoreMDHet" x 2
+	    ##
+	    ## --> creation of the variable lVariantsRankingByGene
+	    catch {unset lVariantsRankingByGene}
+	    #puts "\t\t...scoring of each gene  ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
+	    foreach gene $lGenes {
+		if {![info exists lVariants($gene)]} {continue}
+		set lVariants($gene) [lsort -command DescendingSortOnElement1 $lVariants($gene)]
+		set liste {}
+		foreach duoIDScore $lVariants($gene) {
+		    set id [lindex $duoIDScore 0]
+		    lappend liste $id
+		}
+		set maxScore1 [lindex [lindex $lVariants($gene) 0] 1]
+		if {[llength $lVariants($gene)] eq 1} {
 		    set BestDuoScore "[expr {$maxScore1*2}]"
 		} else {
-		    set maxScore2 [lindex [lindex $lVariants($patient,$gene) 1] 1]
-		    set BestDuoScore "[expr {$maxScore1+$maxScore2}]"
+		    set bestID [lindex [lindex $lVariants($gene) 0] 0]
+		    set zygosityOfTheBesTID [lindex [lindex $lVariants($gene) 0] 2]
+		    if {[regexp -nocase "hom" $zygosityOfTheBesTID]} {
+			set BestDuoScore "[expr {$maxScore1*2}]"
+		    } else {
+			set maxScore2 [lindex [lindex $lVariants($gene) 1] 1]
+			set BestDuoScore "[expr {$maxScore1+$maxScore2}]"
+		    }
 		}
+		lappend lVariantsRankingByGene "{$liste} $BestDuoScore"
 	    }
-	    lappend lVariantsRankingByGene($patient) "{$liste} $BestDuoScore"
-	}
-	if {[info exists lVariantsRankingByGene($patient)]} {
-	    set lVariantsRankingByGene($patient) [lsort -command DescendingSortOnElement1 $lVariantsRankingByGene($patient)]
-	}
-    }
-
-    #unset 
-    #if {[info exist lVariantsRankingByGene]} {array unset lVariantsRankingByGene "*"}
-    # unset lVariants ???
-
-    ## Writing of the outputs
-    #########################
-    puts "\t...writing \"*_allVariants.rankingByGene.tsv\" output files ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
-    foreach fam [array names g_lPatientsOf] {
-	foreach patient $g_lPatientsOf($fam) {
-
-	    if {$g_VaRank(SamOut) ne "all" && [lsearch -exact -nocase $g_VaRank(SamOut) $patient] eq -1} {continue}
-
-	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByGene.tsv"
-	    ReplaceTextInFile "$textAllEx\n## FamilyBarcode: $g_lPatientsOf($fam)\n$HeaderText" $outputfile
-	    
-	    if {![info exists lVariantsRankingByGene($patient)]} {continue}
+	    if {[info exists lVariantsRankingByGene]} {
+		set lVariantsRankingByGene [lsort -command DescendingSortOnElement1 $lVariantsRankingByGene]
+	    } else {
+		continue
+	    }
 	    
 	    ## Downloading each ranking file line.
-	    set  rankFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
-	    if {$rankFile eq ""} {continue}
-	    foreach L [LinesFromFile $rankFile] {
+	    ## set rankingByVarFile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByVar.tsv"
+	    foreach L [LinesFromFile $rankingByVarFile] {
 		set id [lindex $L 0]
 		if {[info exists Tab($id)]} {set ligne($patient,$id) $L}
 	    }
 	    
-	    foreach el $lVariantsRankingByGene($patient) {
-
-		set i 0
-		set L_Lines {}
-		foreach id [lindex $el 0] {
-		    incr i
-		    
-		    if {$i>10000} {
-			set L_Lines {}
-			set i 0
-			WriteTextInFile [join $L_Lines "\n"] $outputfile
-		    }
+	    ## Writing of the patient output
+	    set outputfile "$g_VaRank(vcfDir)/[set fam]_[set patient]_${genomeBuild}_allVariants.rankingByGene.tsv"
+	    ReplaceTextInFile "$textAllEx\n## FamilyBarcode: $g_lPatientsOf($fam)\n$HeaderText" $outputfile
+	    #puts "\t\t...writing \"$outputfile\" output files ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"	    
+	    set i 0
+	    set L_Lines {}
+	    foreach infoForOneGene $lVariantsRankingByGene {
+		foreach id [lindex $infoForOneGene 0] {
 		    lappend L_Lines $ligne($patient,$id)
-		}
-		
-		if {$L_Lines ne {}} {
-		    WriteTextInFile [join $L_Lines "\n"] $outputfile
-		    set L_Lines {}
-		    set i 0
+		    incr i
+		    if {$i > 10000} {
+			WriteTextInFile [join $L_Lines "\n"] $outputfile
+			set i 0
+			set L_Lines {}
+		    }
 		}
 	    }
+	    if {$L_Lines ne ""} {
+		WriteTextInFile [join $L_Lines "\n"] $outputfile
+	    }
+	    
 	    # Memory safe!!!
 	    array unset ligne "*"
 	}

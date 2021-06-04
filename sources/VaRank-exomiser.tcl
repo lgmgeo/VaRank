@@ -220,7 +220,6 @@ proc searchForAllGenesContainingVariants {sample} {
 
     global g_VaRank
     global g_ANNOTATION
-    global g_vcfINFOS
     
     set i_gene [lsearch -regexp [split $g_ANNOTATION(#id) "\t"] "^gene"]
     if {$i_gene eq -1} {
@@ -229,10 +228,12 @@ proc searchForAllGenesContainingVariants {sample} {
     }
 
     set L_allGenes ""
-    foreach id [array names g_ANNOTATION] {
-	if {$id eq "#id"} {continue}
-	if {![regexp "$sample:" $g_vcfINFOS($id)]} {continue}
-	foreach ann "$g_ANNOTATION($id)" {
+    foreach ID [array names g_ANNOTATION] {
+	if {$ID eq "#id"} {continue}
+	
+	set test [db_vcfData eval {SELECT ID FROM vcfSampleData AS vs INNER JOIN sampleName AS sn ON vs.sampleName_id = sn.sampleName_id WHERE ID = $ID AND sampleName = $sample}]
+	if {$test eq ""} {continue}
+	foreach ann "$g_ANNOTATION($ID)" {
 	    set gene [lindex [split $ann "\t"] $i_gene]
 	    foreach g [split $gene "/"] {
 		regsub -all "{|}" $g "" g

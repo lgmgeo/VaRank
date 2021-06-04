@@ -36,7 +36,6 @@
 proc executeFilters {} {
 
     global g_VaRank
-    global g_vcfINFOS
     global g_ANNOTATION
     global env 
 
@@ -224,16 +223,17 @@ proc executeFilters {} {
 	    if {[regexp "^## Barcode:" $L]} {append OutputText2     $L; continue}
 	    if {[regexp "^##"          $L]} {append OutputText2 "\n$L"; continue}
             set Ls [split $L "\t"]
-
 	    if {[regexp "^variantID" $L]} {
 		append OutputText2 "\n$L"
-		set i_gene  [lsearch -exact $Ls "gene"];           if {$i_gene  == -1} {puts "gene: column number not found - Exit"; exit}
-		set i_score [lsearch -exact $Ls "varankVarScore"]; if {$i_score == -1} {puts "varankVarScore: column number not found - Exit"; exit}
+		set i_gene     [lsearch -exact $Ls "gene"];           if {$i_gene  == -1} {puts "gene: column number not found - Exit"; exit}
+		set i_score    [lsearch -exact $Ls "varankVarScore"]; if {$i_score == -1} {puts "varankVarScore: column number not found - Exit"; exit}
+		set i_zygosity [lsearch -regexp $L "^zygosity$"];     if {$i_zygosity eq -1} {puts "zygosity: column number not found - Exit"; exit}
 		continue
 	    }
 	    set id   [lindex $Ls 0]     
 	    set gene [lindex $Ls $i_gene] 
 	    if {$gene == "NA"} {continue}
+	    set zygosity [lindex $L $i_zygosity]
 
 	    if {[lsearch -exact $lGenes "$gene"] == -1} {
 		lappend lGenes $gene
@@ -243,7 +243,7 @@ proc executeFilters {} {
 	    set score [lindex $Ls $i_score] 
 	    if {$score eq ""} {continue} 
  
-	    lappend lVariants($gene) "$id $score"
+	    lappend lVariants($gene) "$id $score $zygosity"
 	}
 	
 	foreach gene $lGenes {
@@ -257,7 +257,8 @@ proc executeFilters {} {
 		set BestDuoScore "[expr {$maxScore1*2}]"
 	    } else {
 		set bestID [lindex [lindex $lVariants($gene) 0] 0]
-		if {[regexp "$patient:(\[^: \]+):" $g_vcfINFOS($bestID) match homhtz] && [regexp -nocase "hom" $homhtz]} {
+		set zygosityOfTheBesTID [lindex [lindex $lVariants($gene) 0] 2]
+		if {[regexp -nocase "hom" $zygosityOfTheBesTID]} {
 		    set BestDuoScore "[expr {$maxScore1*2}]"
 		} else {
 		    set maxScore2    [lindex [lindex $lVariants($gene) 1] 1]

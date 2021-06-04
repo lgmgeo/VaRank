@@ -27,35 +27,74 @@
 # along with this program; If not, see <http://www.gnu.org/licenses/>.                                     #
 ############################################################################################################
 
-proc geneForStarID {starID i_gene} {
 
+proc createTheSQLiteDB {} {
+    
     global g_VaRank
-    global g_ANNOTATION
-    global g_consensusID
-    # In case of ID with ALT="*" (stands for a upstream deletion), retrieve gene name annotation
 
-    set gene "NA"
-
-    if {![regexp "(.+?)_(.+?)_" $starID match chrom pos]} {return "$gene"}
-
-    if {![info exists g_consensusID("test")]} {
-	set g_consensusID("test") 1
-	
-	set saveIDfile "$g_VaRank(vcfDir)/VCF_Coordinates_Conversion.tsv"
-	if {[file exists $saveIDfile]} {
-	    foreach L [LinesFromFile $saveIDfile] {
-		set Ls [split $L "\t"]
-		# We parse the position from the VCF, not the one in the ID (that can be changed with "SimplifyVariation")
-		set c [lindex $Ls 1]
-		set p [lindex $Ls 2]
-		if {[regexp "\\*$" $L]} {continue}
-		set g_consensusID($c,$p) [lindex $Ls 0]
-	    }
+    # Creation of the "db_vcfData" SQLite database to store the VCF data
+    puts "...creation of the tmp SQLite database to load the VCF data"
+    regsub "sources" $g_VaRank(sourcesDir) "bash" bashDir
+    set dbFileTail "VaRank_vcfData_tmp_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].db"
+    set sqLiteDBfile "$g_VaRank(vcfDir)/$dbFileTail"
+    puts "\t$sqLiteDBfile"
+    
+    set diskNFS ""
+    catch {set diskNFS [exec bash $bashDir/isNFSdisk.bash $g_VaRank(vcfDir)]}
+    if {[regexp -nocase "nfs" $diskNFS]} {
+	if {![catch {set dfkh [exec df -kh [file dirname $sqLiteDBfile] | tail -1]} Message]} {
+	    puts "\t...on the filesystem: [lindex $dfkh 0]"
 	}
+	puts "\t   WARNING: Using NFS volumes ($diskNFS) to write the SQLite database can lead to an increase of the running time."
+    }
+    file delete -force "$sqLiteDBfile"
+    file delete -force "${sqLiteDBfile}-journal"
+    sqlite3 db_vcfData "$sqLiteDBfile"
+
+    db_vcfData eval {PRAGMA foreign_keys = ON;}
+    
+    db_vcfData eval {
+	CREATE TABLE vcfSVdata (
+				chrom    TEXT,
+				pos      INT,
+				ref      TEXT,
+				alt      TEXT,
+				rsID     TEXT,
+				rsValid  TEXT,
+				ID       TEXT UNIQUE
+				)
+    }    
+    db_vcfData eval {
+	CREATE TABLE sampleName (
+				 sampleName_id INTEGER NOT NULL PRIMARY KEY,
+				 sampleName    TEXT NOT NULL
+				 )
+    }
+    db_vcfData eval {
+	CREATE TABLE vcfSampleData (
+				ID            TEXT,
+				homhet        TEXT,
+				dp            INTEGER,
+				nr            INTEGER,
+				qual          TEXT,
+				INFO          TEXT,
+				sampleName_id INTEGER,
+				FOREIGN KEY(sampleName_id) REFERENCES sampleName(sampleName_id),
+				FOREIGN KEY(ID) REFERENCES vcfSVdata(ID)
+				)
     }
 
-    catch {set gene [lindex $g_ANNOTATION($g_consensusID($chrom,$pos)) $i_gene]}
-    
-    return "$gene"
+    return $sqLiteDBfile
 }
 
+
+proc closeTheSQLiteDB {sqLiteDBfile} {
+    
+    # Close and delete the SQLite db
+    puts "...deletion of the tmp SQLite database"
+    puts "\t($sqLiteDBfile)"
+    db_vcfData close    
+    file delete -force "$sqLiteDBfile"
+
+    return
+}

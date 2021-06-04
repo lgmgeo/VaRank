@@ -32,7 +32,6 @@
 global g_VaRank
 global g_allPatients
 global g_lPatientsOf
-global g_vcfINFOS
 global g_ANNOTATION
 global g_PPH2
 global g_lScore
@@ -42,6 +41,8 @@ global g_deltaNNS
 global g_Statistics
 global env
 global L_hpo
+
+package require sqlite3
 
 ## Checking for environment variables needed (if all are defined).
 if {![info exists env(VARANK)]} {
@@ -75,6 +76,7 @@ source $g_VaRank(sourcesDir)/VaRank-ranking.tcl
 source $g_VaRank(sourcesDir)/VaRank-scoring.tcl
 source $g_VaRank(sourcesDir)/VaRank-snpeff.tcl
 source $g_VaRank(sourcesDir)/VaRank-stats.tcl
+source $g_VaRank(sourcesDir)/VaRank-sqlite.tcl
 source $g_VaRank(sourcesDir)/VaRank-vcf.tcl
 source $g_VaRank(sourcesDir)/VaRank-upstreamDeletion.tcl
 
@@ -123,9 +125,13 @@ if {[regexp -nocase "help" $argv]} {showHelp; exit}
 configureVaRank $argv
 ExternalAnnotations
 
+## SQLite database
+set sqLiteDBnameFile [createTheSQLiteDB]
+
 ## Downloading VCF files data:
 parseVCFfiles
 
+## Annotation engine (Alamut / SnpEff)
 if {[info exists g_VaRank(snpeffDir)]} {
     ## Creation of the SnpEff input files (containing non redundant variants)
     createSnpEffInputFile
@@ -133,6 +139,7 @@ if {[info exists g_VaRank(snpeffDir)]} {
     runSnpEff
     parseSnpEffFile
 } else {
+    ## Creation of the Alamut input files (containing non redundant variants)
     createAlamutInputFile
     checkIfCorrupted
     runAlamut
@@ -193,6 +200,10 @@ if {[info exists g_Statistics(All)]} {
 	puts "\tWARNING: These variations are not included in the annotated output files."
     }
 }
+
+# SQLite database
+closeTheSQLiteDB $sqLiteDBnameFile
+
 puts "...VaRank is done with the analysis ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 
 

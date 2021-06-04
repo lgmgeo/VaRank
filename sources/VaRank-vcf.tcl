@@ -27,6 +27,7 @@
 # along with this program; If not, see <http://www.gnu.org/licenses/>.                                     #
 ############################################################################################################
 
+
 proc AssignID {chrom pos ref alt} {
 
     global g_VaRank
@@ -189,25 +190,26 @@ proc SimplifyVariation {pos ref alt} {
 
 
 ## Parsing of VCF input file(s).
+## Parsing of VCF input file(s).
 ## Output:
-## 	2 global variables:
-##	- g_allPatients = "patient1 patient2 ..." 
-##	- g_vcfINFOS(ID) = "chrom pos ref alt rsID rsValidation patient1:homhet:dp:nr:qual patient2:homhet:dp:nr:qual ..."
-##	  >> If ID is absent from patient1, so "patient1:homhet:dp:nr:qual" is not put in memory.
+## 1 global variable:
+##      - g_allPatients = "patient1 patient2 ..."
+## 1 SQLite database:
+##      - vcfData.db (tables = sampleName, vcfSVdata, vcfSampleData)
+## 1 output file:
 ##      - $g_VaRank(vcfDir)/VCF_Coordinates_Conversion.tsv
 ##
 ##  Empty data (./.) and wild type variation are filtered out for every patient individually
-##
 proc parseVCFfiles {} {
-
+    
     global g_VaRank
-    global g_vcfINFOS
     global g_vcfINFOS_Supp
     global g_allPatients
     global g_lPatientsOf
+    
 
     set g_allPatients {}
-    set patientsDir   $g_VaRank(vcfDir)
+    set patientsDir $g_VaRank(vcfDir)
     
     set nbPatients_Total   0
     set nbVariations_Total 0
@@ -215,20 +217,37 @@ proc parseVCFfiles {} {
 
     set L_NewHeaders_VCF {}
     set L_AllHeaders_VCF {}
-    set g_vcfINFOS(L_IDs) {}
-		    
+    
     set saveIDfile "$g_VaRank(vcfDir)/VCF_Coordinates_Conversion.tsv"
     file delete -force $saveIDfile
     WriteTextInFile "VariantID\tCHROM\tPOS\tREF\tALT" $saveIDfile
 
+    # Load the SQLite database directly with a csv file:
+    # We use "COPY" to load all the rows in one command, instead of using a series of "INSERT" commands.
+    # -> The COPY command is optimized for loading large numbers of rows; it is less flexible than INSERT, but incurs significantly less overhead for large data loads.
+    set sampleNameCSVfile "tmp_sampleName_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+    set vcfSVdataCSVfile "tmp_vcfSVdata_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+    set vcfSampleDataCSVfile "tmp_vcfSampleData_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+
+    # snid: sample name id
+    # Need to respect the unique constraint (even with multiple VCF): 1 snid for each sample
+    set snid 0
+
+
+    # Parsing of each VCF files
     foreach vcfFile [glob -nocomplain $patientsDir/*.vcf $patientsDir/*.vcf.gz] {
 
 	incr nbFiles
 
+	# SQLite db
+	set L_Values_sampleName {}
+	set L_Values_vcfSVdata {}
+	set L_Values_vcfSampleData {}
+
 	set DP_once 1
 	set NR_once 1
 
-	set l_patients {}
+	set l_patientsFromTheLastVCF {}
 
 	puts "...parsing the VCF file ($vcfFile) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
 	
@@ -264,9 +283,9 @@ proc parseVCFfiles {} {
 		set L [split $L "\t"]
 		set i_chr    [lsearch -exact $L "#CHROM" ]; if {$i_chr    == -1} {puts "Bad header line syntax into $vcfFile. \n#CHROM column not found - Exit"; exit}
 		set i_pos    [lsearch -exact $L "POS"];     if {$i_pos    == -1} {puts "Bad header line syntax into $vcfFile. \nPOS column not found - Exit"; exit}
+		set i_id     [lsearch -exact $L "ID"];      if {$i_id     == -1} {puts "Bad header line syntax into $vcfFile. \nID column not found - Exit"; exit}
 		set i_ref    [lsearch -exact $L "REF"];     if {$i_ref    == -1} {puts "Bad header line syntax into $vcfFile. \nREF column not found - Exit"; exit}
 		set i_alt    [lsearch -exact $L "ALT"];     if {$i_alt    == -1} {puts "Bad header line syntax into $vcfFile. \nALT column not found - Exit"; exit}
-		set i_id     [lsearch -exact $L "ID"];      if {$i_id     == -1} {puts "Bad header line syntax into $vcfFile. \nID column not found - Exit"; exit}
 		set i_qual   [lsearch -exact $L "QUAL"];    if {$i_qual   == -1} {puts "Bad header line syntax into $vcfFile. \nQUAL column not found - Exit"; exit}
 		set i_valid  [lsearch -exact $L "VALID"]
 		set i_filter [lsearch -exact $L "FILTER"];  if {$i_filter == -1} {puts "Bad header line syntax into $vcfFile. \nFILTER column not found - Exit"; exit}
@@ -285,19 +304,29 @@ proc parseVCFfiles {} {
 		    
 		    if {[lsearch -exact $g_allPatients $patient] != -1} {
 			puts "\tWARNING: $patient seems to be present in different VCF files"
-			lappend l_patients    $patient
+			lappend l_patientsFromTheLastVCF    $patient
 		    } else {
 			lappend g_allPatients $patient
-			lappend l_patients    $patient
+			lappend l_patientsFromTheLastVCF    $patient
 		    }
 
 		    set i_$patient $i
 		}
 		set FirstTime 1
-
+		
+		## Load the information needed to fill the "sampleName" table from the "db_vcfData" database
+		foreach patient $l_patientsFromTheLastVCF {
+		    if {![info exists sampleName_id($patient)]} {
+			set sampleName_id($patient) $snid
+			lappend L_Values_sampleName "$snid\t$patient"
+			#db_vcfData eval {INSERT INTO sampleName (sampleName_id, sampleName) VALUES ($snid, $patient)}
+			incr snid
+		    }
+		}
+		
 		continue
 	    }
-
+	    
 	    ## Checking that the VCF file contain an header line beginning with "#CHROM"
 	    if {! $FirstTime} {
 		puts "WARNING: [file tail $vcfFile] not contain a good header line syntax (not beginning with \"#CHROM\"). Exit."
@@ -331,7 +360,7 @@ proc parseVCFfiles {} {
 	    } else {
 		set rs "NA"; set valid "NA"
 	    }
-
+	    
 	    set filter [lindex $L $i_filter]
 	    set info   [lindex $L $i_info] 
 	    regsub -all {\"} $info "" info
@@ -446,7 +475,7 @@ proc parseVCFfiles {} {
 			set duo_Header_Infos_VCF [split $duoInfos_VCF "="]
 			set Header [lindex $duo_Header_Infos_VCF 0]
 			
-			if {[llength $duo_Header_Infos_VCF]>2} {puts ">>>>>>>>>$ID $duo_Header_Infos_VCF ----- $Header"}
+			if {[llength $duo_Header_Infos_VCF]>2} {puts ">>>>>>>>> $duo_Header_Infos_VCF ----- $Header"}
 			
 			if {[lsearch -exact $L_AllHeaders_VCF $Header]==-1} {
 			    lappend L_AllHeaders_VCF $Header
@@ -473,16 +502,11 @@ proc parseVCFfiles {} {
 		set pos_tmp  [lindex $sID 1]
 		set ref_tmp  [lindex $sID 2]
 		set altn_tmp [lindex $sID 3]
-
-		if {![info exists g_vcfINFOS($ID)]} {
-		    set g_vcfINFOS($ID) "$chrom $pos_tmp $ref_tmp $altn_tmp $rs $valid" ; # To add only if there is at least 1 altn ok.
-		    lappend g_vcfINFOS(L_IDs) $ID
-		}
-
+		
 		set firstTime 1 ; # some variant are present in VCF but absent from samples (GT always like 0/0)
-
+		
 		# Analysing the 'sample' COLUMNS
-		foreach patient $l_patients {
+		foreach patient $l_patientsFromTheLastVCF {
 
 		    if {![info exists i_$patient]} {continue}; # In case of several VCF files in input 
 		    set value [lindex $L [set i_$patient]]
@@ -495,49 +519,30 @@ proc parseVCFfiles {} {
 		    #Genotype for the patient
 		    set gt [lindex $lvalue $j_gt]
 
-		    # Wild type variation (actually not variation) are filtered out
-		    #
-		    # If a call cannot be made for a sample at a given locus, 
-		    # '.' is specified for each missing allele in the GT field (example: GT='./.')
-		    # WARNING: VCF with at least 10 ALT? $k =10? If yes, taken into account in the following regexp.
+		    # - Some variants are present in VCF but absent from samples (GT always like 0/0)
+		    # - If a call cannot be made for a sample at a given locus, 
+		    #   '.' is specified for each missing allele in the GT field (example: GT='./.')
+		    # NOTE: VCF with at least 10 ALT ($k =10) are taken into account in the following regexp
 		    if {![regexp "^$k/" $gt] && ![regexp "/$k$" $gt] && ![regexp "^$k\\\|" $gt] && ![regexp "\\\|$k$" $gt]} {continue}
+		    # => From here, the variants are presents in the last VCF AND presents in at least 1 sample (GT not always like 0/0)
 
-		    # some variant are present in VCF but absent from samples (GT always like 0/0)
+		    # Calculate the number of variations in the last VCF
 		    if {$firstTime} {
 			set firstTime 0
 			incr nbVariations_File
 		    }
-		    
-		    ## 2015/11/01: Keep the './.' info???
 
-
-		    #We need to extract the INFO column and additional information from there and this for each patient individually
-		    #Storing is done here but extraction is done while ranking to ensure the big picture
-		    #Analysing the INFO COLUMN
-		    #
-		    if {[set g_VaRank(vcfInfo)]=="yes"} {
-			if {![info exists g_vcfINFOS_Supp($ID,$patient)]} {
-			    if {$g_VaRank(vcfFields)=="all"} {
-				set g_vcfINFOS_Supp($ID,$patient) [split $info ";"]
-			    } else {
-				foreach duoInfos_VCF [split $info ";"] {
-				    set duo_Header_Infos_VCF [split $duoInfos_VCF "="]
-				    set Header [lindex $duo_Header_Infos_VCF 0]
-				    if {[lsearch -exact $g_VaRank(vcfFields) $Header]!=-1} {
-					lappend g_vcfINFOS_Supp($ID,$patient) $duoInfos_VCF
-				    }
-				}
-			    }
-			}
-		    }
-		    
+		    # Insert only if there is at least 1 altn ok.
+		    # WARNING: We have some redundancy in "$L_Values_vcfSVdata" => use of "IGNORE" during the "COPY".
+		    #db_vcfData eval {INSERT INTO vcfSVdata (chrom, pos, ref, alt, rsID, rsValid, ID) VALUES ($chrom, $pos_tmp, $ref_tmp, $altn_tmp, $rs, $valid, $ID)}
+		    lappend L_Values_vcfSVdata "$chrom\t$pos_tmp\t$ref_tmp\t$altn_tmp\t$rs\t$valid\t$ID"
 
 		    if {$j_dp != -1} {
 			set  dp [lindex $lvalue $j_dp]
 			# 2018-07-27: debuggage for the old VCF from the diag (DP present in the format column but not in the patient column)
 			if {$dp eq ""} {set dp "0"}
 			if {$dp=="0"} {incr NbDPEmpty} else {incr NbDPSaved}
-		    } elseif {$DPINFO != "" && [llength $l_patients]<=1} {
+		    } elseif {$DPINFO != "" && [llength $l_patientsFromTheLastVCF]<=1} {
 			set  dp $DPINFO
 			if {$dp=="0"} {incr NbDPEmpty} else {incr NbDPSaved}
 		    } else {
@@ -592,7 +597,7 @@ proc parseVCFfiles {} {
 		    } else {
 			set n 0
 		    }
-
+		    
 		    #puts "$gt - $n"
 		    if {[set g_VaRank(Homstatus)]=="yes"} {
 			#Recompute the ratio for homozygosity/heterozygosity detection
@@ -646,13 +651,42 @@ proc parseVCFfiles {} {
 		    if {$nr =="." || $nr == "NA"} {continue}
 
 		    #puts "$patient:$StatutHomHet:$dp:$nr:$qual"
-
-		    lappend g_vcfINFOS($ID) "$patient:$StatutHomHet:$dp:$nr:$qual"
-		    set     g_vcfINFOS($ID,$patient) 1
+		    set thesnid $sampleName_id($patient) ;# The following command doesn't work without that (because of setting an empty value...)
+		    #db_vcfData eval {INSERT INTO vcfSampleData (ID, homhet, dp, nr, qual, INFO, sampleName_id) \
+			#			 VALUES ($ID, $StatutHomHet, $dp, $nr, $qual, $info, $thesnid)}
+		    lappend L_Values_vcfSampleData "$ID\t$StatutHomHet\t$dp\t$nr\t$qual\t$info\t$thesnid"
 		}
 	    }
 	}
-	incr   nbPatients_Total $nbPatients_File
+
+	# For each VCF file, write in the SQLite db:
+	############################################
+	# -> "sampleName" table
+	if {$L_Values_sampleName ne ""} {
+	    # set sampleNameCSVfile "tmp_sampleName_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+	    ReplaceTextInFile "[join $L_Values_sampleName "\n"]" $sampleNameCSVfile
+	    db_vcfData copy fail sampleName "$sampleNameCSVfile" "\t"
+	    file delete -force $sampleNameCSVfile
+	    catch {unset $L_Values_sampleName}
+	}
+	# -> "vcfSVdata" table
+	if {$L_Values_vcfSVdata ne ""} {
+	    #set vcfSVdataCSVfile "tmp_vcfSVdata_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+	    ReplaceTextInFile "[join $L_Values_vcfSVdata "\n"]" $vcfSVdataCSVfile
+	    db_vcfData copy ignore vcfSVdata "$vcfSVdataCSVfile" "\t"
+	    file delete -force $vcfSVdataCSVfile
+	    catch {unset $L_Values_vcfSVdata}
+	}
+	# -> "vcfSampleData" table
+	if {$L_Values_vcfSampleData ne ""} {
+	    #set vcfSampleDataCSVfile "tmp_vcfSampleData_[clock format [clock seconds] -format "%Y%m%d-%H%M%S"].csv"
+	    ReplaceTextInFile "[join $L_Values_vcfSampleData "\n"]" $vcfSampleDataCSVfile
+	    db_vcfData copy fail vcfSampleData "$vcfSampleDataCSVfile" "\t"
+	    file delete -force $vcfSampleDataCSVfile
+	    catch {unset $L_Values_vcfSampleData}
+	}	
+
+	incr nbPatients_Total   $nbPatients_File
 	incr nbVariations_Total $nbVariations_File
 
 	puts "\tFile loaded: $nbVariations_File non redundant variation(s) in $nbPatients_File sample(s) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])."
@@ -666,8 +700,6 @@ proc parseVCFfiles {} {
 
     puts "...VCF file(s) loaded: $nbFiles file(s) for $nbVariations_Total variation(s) in $nbPatients_Total sample(s) ([clock format [clock seconds] -format "%B %d %Y - %H:%M"])"
     
-    #foreach L [array get g_vcfINFOS] {puts $L}
-
     ## Check if all the patient given by family in the config file are presents in the VCF file.
     if {[info exists g_lPatientsOf]} {
 	foreach fam [array names g_lPatientsOf] {
@@ -687,6 +719,15 @@ proc parseVCFfiles {} {
 	    }
 	}
     }
+
+
+    ## All the VCF data are inserted in the SQLite database:
+    ## => Creation of the indexes
+    puts "...creation of the SQLite indexes"
+    db_vcfData eval {CREATE INDEX vcfSVdataIDIndex ON vcfSVdata(ID)}
+    db_vcfData eval {CREATE INDEX vcfSampleDataIDIndex ON vcfSampleData(ID)}
+    db_vcfData eval {CREATE INDEX vcfSampleDataSnidIndex ON vcfSampleData(sampleName_id)}
+
 
     ## Patients without an attributed family in the config file have here a new family.
     ## If no family have been defined in the config file, we attribute a family for each patient of the VCF files.
@@ -752,7 +793,7 @@ proc parseVCFfiles {} {
 	    puts "\t$L_NewHeaders_VCF"
 	}
     }
-
+    
     return
 }
 
