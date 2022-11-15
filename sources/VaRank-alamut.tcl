@@ -573,7 +573,10 @@ proc runAlamut {} {
 		#     Couldn't cleanly close connection
 		#     Alamut Batch unexpected stop
 		#     child process exited abnormally
-		set What "***BATCH FINISHED WITH ERRORS***"
+		set What "\\*\\*\\*BATCH FINISHED WITH ERRORS\\*\\*\\*"
+		puts $ErrorLines
+		puts $Message
+		#set What "***BATCH FINISHED WITH ERRORS***"
 		if {[regexp $What $Message]||[regexp $What $ErrorLines]} {
 		    set DateDuJour [clock seconds]
 		    puts "\t\t...Alamut Batch finished with errors, waiting some time before retry [clock format $DateDuJour -format "%B %d %Y - %H:%M"]"
